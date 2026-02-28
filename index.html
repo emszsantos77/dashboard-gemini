@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>JBS Frios - Dashboard Profissional</title>
+
+  <!-- Bibliotecas: Tailwind, Chart.js, DataLabels, Choices.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{ --sidebar-w:260px; --bg:#f1f5f9; --jbs-blue:#004a99; --card-border:#e6eef6; }
+    html,body{height:100%; margin:0; font-family:'Inter',sans-serif; background:var(--bg); color:#0f172a;}
+
+    /* Sidebar Fixa */
+    .sidebar{position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-w); background:linear-gradient(180deg,#063a80 0%, #063a80 100%); color:white; padding:28px 20px; z-index:20; display:flex; flex-direction:column; gap:18px}
+    .logo img{height:44px}
+    .nav a{display:block; padding:12px; border-radius:10px; color:rgba(255,255,255,0.95); text-decoration:none; margin-bottom:6px; font-weight:600; cursor:pointer}
+    .nav a.active{background:rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.1);}
+
+    /* Área Principal */
+    .main{margin-left:var(--sidebar-w); padding:28px; min-height:100vh; box-sizing:border-box}
+    .container{max-width:1200px; margin:0 auto}
+
+    .page-title{font-size:28px; font-weight:800; color:#0f172a; line-height:1.05}
+    .page-sub{color:#475569; margin-top:6px}
+
+    /* Barra de Filtros (Multi-select) */
+    .filter-bar { background:#fff; padding:18px; border-radius:12px; border:1px solid #e2e8f0; display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.02) }
+    .filter-group { display:flex; flex-direction:column; gap:6px; flex: 1; min-width:180px; }
+    .filter-group label { font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.4px }
+
+    /* Customização Choices.js para ficar limpo */
+    .choices__inner { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; min-height: 42px !important; padding: 4px !important; }
+    .choices__list--multiple .choices__item { background-color: #004a99 !important; border: none !important; border-radius: 4px !important; font-weight: 600 !important; }
+
+    /* Cards KPI */
+    .kpi-row{display:grid; grid-template-columns:repeat(5,1fr); gap:18px; margin-bottom:25px}
+    .card{background:white; border-radius:12px; padding:20px; border:1px solid var(--card-border); box-shadow:0 4px 12px rgba(0,0,0,0.03)}
+    .card .title{font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase}
+    .card .value{font-size:22px; font-weight:800; margin-top:8px; color: #1e293b;}
+    .card .meta{font-size:12px; font-weight: 600; margin-top:8px}
+
+    /* Gráficos */
+    .charts-grid{display:grid; grid-template-columns: 1fr; gap:25px;}
+    .chart-card{background:white; border-radius:12px; padding:22px; border:1px solid var(--card-border); box-shadow:0 4px 12px rgba(0,0,0,0.03)}
+    .chart-title{font-size: 18px; font-weight:700; margin-bottom:15px; color: #1e293b;}
+
+    .lower-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:25px}
+
+    table { width:100%; border-collapse:collapse; }
+    thead th { text-align:left; color:#64748b; font-size:11px; padding: 12px 8px; border-bottom: 2px solid #f1f5f9; text-transform:uppercase; }
+    tbody td { padding:14px 8px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+    .btn-rota { background:#004a99; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:700; }
+    .cities-list li { padding:6px 0; border-bottom:1px dashed #e6eef6; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="logo" style="display:flex;align-items:center;gap:10px">
+      <img src="./logo.png" alt="JBS" onerror="this.style.display='none'">
+      <div style="font-weight:800;font-size:18px">JBS <span style="font-weight:300;color:#cfe0ff">FRIOS</span></div>
+    </div>
+    <nav class="nav" style="margin-top:10px">
+      <a id="link-dashboard" class="active">Visão Executiva</a>
+      <a id="link-rotas">Relatórios de Rotas</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <div class="container">
+      <div style="margin-bottom:20px">
+        <h1 class="page-title">Análise de Faturamento Mensal</h1>
+        <p class="page-sub">Análise consolidada de faturamento e logística</p>
+      </div>
+
+      <!-- Filtros Multi-seleção -->
+      <div class="filter-bar">
+        <div class="filter-group">
+          <label>Ano</label>
+          <select id="filter-year" multiple></select>
+        </div>
+        <div class="filter-group">
+          <label>Mês</label>
+          <select id="filter-month" multiple>
+            <option value="jan">Janeiro</option><option value="fev">Fevereiro</option><option value="mar">Março</option>
+            <option value="abr">Abril</option><option value="mai">Maio</option><option value="jun">Junho</option>
+            <option value="jul">Julho</option><option value="ago">Agosto</option><option value="set">Setembro</option>
+            <option value="out">Outubro</option><option value="nov">Novembro</option><option value="dez">Dezembro</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Cidade</label>
+          <select id="filter-city" multiple></select>
+        </div>
+        <div class="filter-group">
+          <label>Rota</label>
+          <select id="filter-route" multiple></select>
+        </div>
+        <div class="filter-group">
+          <label>Operação</label>
+          <select id="filter-operation" multiple></select>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-row" id="dashboard-view">
+        <div class="card">
+          <div class="title">Faturamento Bruto</div>
+          <div class="value" id="kpi-bruto">R$ 0,00</div>
+          <div class="meta" id="kpi-bruto-pct">—</div>
+        </div>
+        <div class="card">
+          <div class="title">Faturamento Líquido</div>
+          <div class="value" id="kpi-liquido">R$ 0,00</div>
+          <div class="meta" id="kpi-liquido-pct">—</div>
+        </div>
+        <div class="card">
+          <div class="title">Bonificações</div>
+          <div class="value" id="kpi-bon">R$ 0,00</div>
+          <div class="meta" id="kpi-bon-pct">—</div>
+        </div>
+        <div class="card">
+          <div class="title">Devoluções</div>
+          <div class="value" id="kpi-dev">R$ 0,00</div>
+          <div class="meta" id="kpi-dev-pct">—</div>
+        </div>
+        <div class="card">
+          <div class="title">Atendimento</div>
+          <div style="display:flex; gap:15px; margin-top:8px">
+            <div>
+              <div style="font-size:18px; font-weight:800" id="kpi-notas">0</div>
+              <div style="font-size:10px; color:#64748b">Notas (média mensal)</div>
+              <div class="meta" id="kpi-notas-pct">—</div>
+            </div>
+            <div>
+              <div style="font-size:18px; font-weight:800" id="kpi-clientes">0</div>
+              <div style="font-size:10px; color:#64748b">Clientes (média mensal)</div>
+              <div class="meta" id="kpi-clientes-pct">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gráficos Principais -->
+      <div id="main-charts" class="charts-grid">
+        <div class="chart-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+            <div class="chart-title">Evolução de Vendas</div>
+            <button id="btn-toggle-view" class="bg-slate-100 border border-slate-200 px-4 py-2 rounded-lg font-bold text-sm hover:bg-slate-200 transition">Mostrar Quadrimestre</button>
+          </div>
+          <div style="height:350px"><canvas id="mainChart"></canvas></div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-title">Composição da Operação</div>
+          <div style="height:300px"><canvas id="groupChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Relatório de Rotas (Oculto por padrão) -->
+      <div id="routes-view" style="display:none" class="chart-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+          <div class="chart-title">Relatório Detalhado por Rota</div>
+          <div>
+            <button id="btn-show-cities" style="padding:8px 12px; border-radius:8px; border:1px solid #e6eef6; background:#fff; cursor:pointer;">Mostrar Cidades da Rota</button>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto; margin-bottom:10px">
+          <table id="routes-table">
+            <thead><tr><th>Rota</th><th>Faturamento Líquido</th><th>Notas</th><th>Clientes</th><th></th></tr></thead>
+            <tbody id="routes-body"></tbody>
+          </table>
+        </div>
+
+        <div id="route-summary-container" style="margin-top:6px"></div>
+
+        <div id="cities-of-route" style="display:none; max-height:300px; overflow:auto; margin-top:10px; border:1px solid #e6eef6; border-radius:8px; padding:10px; background:#fafafa;">
+          <strong style="display:block; margin-bottom:8px">Cidades na rota:</strong>
+          <ul id="cities-list" class="cities-list" style="list-style:none; padding-left:0; margin:0;"></ul>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Plugins and helpers
+    Chart.register(ChartDataLabels);
+    const fmtBRL = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v||0);
+    const monthMap = { jan:1, fev:2, mar:3, abr:4, mai:5, jun:6, jul:7, ago:8, set:9, out:10, nov:11, dez:12 };
+    
+    let rawData = [], choices = {}, charts = {}, isQuarterView = false;
+    let selectedRoute = null;
+
+    async function init() {
+      try {
+        const res = await fetch('./Uploads/Rota_Valor_clean.json');
+        rawData = await res.json();
+        
+        // Normalizar dados - garantir campos usados
+        rawData.forEach(r => {
+          r.id_valor = r.id_valor ?? r.valor ?? r.id_valor;
+          r.valor = Number(String(r.id_valor).replace(/[^\d\-,.]/g,'').replace(',','.')) || 0;
+          r.notas = Number(r.id_quantidade_notas || r.notas || 0) || 0;
+          r.clientes = Number(r.id_quantidade_clientes || r.clientes || 0) || 0;
+          r.mesNum = monthMap[(r.id_mes || '').toString().toLowerCase()] || (r.mes || r.mesNum) || 1;
+        });
+
+        setupFilters();
+        updateDashboard();
+        setupNav();
+        setupRouteCityButton();
+      } catch (e) {
+        document.body.innerHTML = `<div class="p-10 text-red-600 font-bold">Erro ao carregar dados: ${e.message}</div>`;
+      }
+    }
+
+    function setupFilters() {
+      const config = { removeItemButton: true, itemSelectText: '', shouldSort: false };
+      const years = [...new Set(rawData.map(r => String(r.id_ano)) )].sort();
+      const cities = [...new Set(rawData.map(r => r.id_cidade))].filter(Boolean).sort();
+      const routes = [...new Set(rawData.map(r => r.id_rota))].filter(Boolean).sort();
+      const ops = [...new Set(rawData.map(r => r.id_operação))].filter(Boolean).sort();
+
+      choices.year = new Choices('#filter-year', config).setChoices(years.map(v=>({value:v, label:v})));
+      choices.month = new Choices('#filter-month', config);
+      choices.city = new Choices('#filter-city', config).setChoices(cities.map(v=>({value:v, label:v})));
+      choices.route = new Choices('#filter-route', config).setChoices(routes.map(v=>({value:v, label:v})));
+      choices.op = new Choices('#filter-operation', config).setChoices(ops.map(v=>({value:v, label:v})));
+
+      Object.values(choices).forEach(c => c.passedElement.element.addEventListener('change', updateDashboard));
+    }
+
+    function updateDashboard() {
+      const filters = {
+        years: (choices.year.getValue ? choices.year.getValue(true) : []).map(String),
+        months: (choices.month.getValue ? choices.month.getValue(true) : []).map(v => String(v).toLowerCase()),
+        cities: (choices.city.getValue ? choices.city.getValue(true) : []),
+        routes: (choices.route.getValue ? choices.route.getValue(true) : []),
+        ops: (choices.op.getValue ? choices.op.getValue(true) : [])
+      };
+
+      const filtered = rawData.filter(r => {
+        if (filters.years.length && !filters.years.includes(String(r.id_ano))) return false;
+        if (filters.months.length && !filters.months.includes(String(r.id_mes).toLowerCase())) return false;
+        if (filters.cities.length && !filters.cities.includes(r.id_cidade)) return false;
+        if (filters.routes.length && !filters.routes.includes(r.id_rota)) return false;
+        if (filters.ops.length && !filters.ops.includes(r.id_operação)) return false;
+        return true;
+      });
+
+      renderKPIs(filtered);
+      renderMainChart(filtered);
+      renderGroupChart(filtered);
+      renderTable(filtered);
+    }
+
+    function renderKPIs(data) {
+      const isVenda = g => (g || '').toString().toLowerCase().includes('venda');
+      const isDev = g => (g || '').toString().toLowerCase().includes('dev');
+      const isBon = g => (g || '').toString().toLowerCase().includes('bonif');
+
+      const bruto = data.filter(r => isVenda(r.id_grupo)).reduce((s,r) => s + r.valor, 0);
+      const dev = data.filter(r => isDev(r.id_grupo)).reduce((s,r) => s + r.valor, 0);
+      const bon = data.filter(r => isBon(r.id_grupo)).reduce((s,r) => s + r.valor, 0);
+      const liquido = bruto - dev - bon;
+
+      function calcMoMGrowth(arr) {
+        if (arr.length < 2) return 0;
+        let growthSum = 0; let count = 0;
+        for (let i = 1; i < arr.length; i++) {
+          const prev = arr[i-1];
+          if (prev === 0) continue;
+          growthSum += (arr[i] - prev) / Math.abs(prev);
+          count++;
+        }
+        return count > 0 ? (growthSum / count) * 100 : 0;
+      }
+
+      // monthsList aligned across data
+      const monthsSet = new Set();
+      data.forEach(r => monthsSet.add(`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`));
+      const monthsList = [...monthsSet].sort();
+
+      function buildArrFor(filterFunc) {
+        return monthsList.map(ym => data.filter(r => (`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === ym) && filterFunc(r)).reduce((s,r) => s + r.valor, 0));
+      }
+
+      const brutoArrAligned = buildArrFor(r => isVenda(r.id_grupo));
+      const devArrAligned = buildArrFor(r => isDev(r.id_grupo));
+      const bonArrAligned = buildArrFor(r => isBon(r.id_grupo));
+      const liquidoArrAligned = monthsList.map((ym,i) => (brutoArrAligned[i] || 0) - (devArrAligned[i] || 0) - (bonArrAligned[i] || 0));
+
+      const brutoGrowth = calcMoMGrowth(brutoArrAligned);
+      const devGrowth = calcMoMGrowth(devArrAligned);
+      const bonGrowth = calcMoMGrowth(bonArrAligned);
+      const liquidoGrowth = calcMoMGrowth(liquidoArrAligned);
+
+      const groupSimpleByMonth = (field) => {
+        const map = {};
+        data.forEach(r => {
+          const ym = `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
+          map[ym] = (map[ym] || 0) + (Number(r[field] || 0));
+        });
+        return Object.entries(map).sort((a,b) => a[0].localeCompare(b[0])).map(e => e[1]);
+      };
+      const notasArr = groupSimpleByMonth('notas');
+      const clientesArr = groupSimpleByMonth('clientes');
+      const avgNotas = notasArr.length ? notasArr.reduce((a,b) => a+b, 0)/notasArr.length : 0;
+      const avgClientes = clientesArr.length ? clientesArr.reduce((a,b) => a+b, 0)/clientesArr.length : 0;
+      const notasGrowth = calcMoMGrowth(notasArr);
+      const clientesGrowth = calcMoMGrowth(clientesArr);
+
+      function formatGrowthText(growth) {
+        const sign = growth >= 0 ? '+' : '';
+        const color = growth >= 0 ? 'text-emerald-500' : 'text-red-500';
+        return `<span class="${color}">${sign}${growth.toFixed(1)}% crescimento médio mensal</span>`;
+      }
+
+      document.getElementById('kpi-bruto').innerText = fmtBRL(bruto);
+      document.getElementById('kpi-bruto-pct').innerHTML = brutoArrAligned.length > 1 ? formatGrowthText(brutoGrowth) : '—';
+
+      document.getElementById('kpi-liquido').innerText = fmtBRL(liquido);
+      document.getElementById('kpi-liquido-pct').innerHTML = liquidoArrAligned.length > 1 ? formatGrowthText(liquidoGrowth) : '—';
+
+      document.getElementById('kpi-bon').innerText = fmtBRL(bon);
+      document.getElementById('kpi-bon-pct').innerHTML = bonArrAligned.length > 1 ? formatGrowthText(bonGrowth) : '—';
+
+      document.getElementById('kpi-dev').innerText = fmtBRL(dev);
+      document.getElementById('kpi-dev-pct').innerHTML = devArrAligned.length > 1 ? formatGrowthText(devGrowth) : '—';
+
+      document.getElementById('kpi-notas').innerText = Math.round(avgNotas).toLocaleString();
+      document.getElementById('kpi-clientes').innerText = Math.round(avgClientes).toLocaleString();
+      document.getElementById('kpi-notas-pct').innerHTML = notasArr.length > 1 ? formatGrowthText(notasGrowth) : '—';
+      document.getElementById('kpi-clientes-pct').innerHTML = clientesArr.length > 1 ? formatGrowthText(clientesGrowth) : '—';
+    }
+
+    function renderMainChart(data) {
+      const ctx = document.getElementById('mainChart').getContext('2d');
+      if (charts.main) charts.main.destroy();
+
+      const aggregated = {};
+      data.forEach(r => {
+        const key = isQuarterView ? `${r.id_ano} Q${Math.ceil(r.mesNum/4)}` : `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
+        aggregated[key] = (aggregated[key] || 0) + r.valor;
+      });
+
+      const labels = Object.keys(aggregated).sort();
+      const values = labels.map(l => aggregated[l]);
+
+      // Growth labels: first label empty
+      const growth = values.map((v, i) => {
+        if (i === 0) return '';
+        const prev = values[i-1];
+        if (prev === 0) return '';
+        const pct = ((v / prev) - 1) * 100;
+        return (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
+      });
+
+      charts.main = new Chart(ctx, {
+        type: isQuarterView ? 'bar' : 'line',
+        data: {
+          labels: labels.map(l => l.includes('-') ? l.split('-')[1]+'/'+l.split('-')[0] : l),
+          datasets: [{
+            label: 'Faturamento',
+            data: values,
+            backgroundColor: '#004a99',
+            borderColor: '#004a99',
+            tension: 0.3,
+            fill: !isQuarterView
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              display: isQuarterView,
+              anchor: 'end',
+              align: 'top',
+              formatter: (v, c) => growth[c.dataIndex] || '',
+              font: { weight: 'bold', size: 11 },
+              color: '#111'
+            }
+          },
+          scales: { y: { beginAtZero: true, ticks: { callback: v => 'R$ ' + v.toLocaleString() } } }
+        }
+      });
+    }
+
+    function renderGroupChart(data) {
+      const ctx = document.getElementById('groupChart').getContext('2d');
+      if (charts.group) charts.group.destroy();
+
+      const map = {};
+      data.forEach(r => map[r.id_operação] = (map[r.id_operação] || 0) + r.valor);
+
+      const labels = Object.keys(map);
+      const values = Object.values(map);
+      const colors = labels.map((_,i) => ['#004a99','#3b82f6','#93c5fd','#cbd5e1','#1e293b','#60a5fa','#bfdbfe'][i % 7]);
+
+      charts.group = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels: labels, datasets: [{ data: values, backgroundColor: colors }] },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } },
+            datalabels: {
+              color: '#fff',
+              formatter: (value, ctx) => {
+                const data = ctx.chart.data.datasets[0].data;
+                const total = data.reduce((a,b) => a + b, 0) || 1;
+                return (value / total * 100).toFixed(1) + '%';
+              },
+              font: { weight: 'bold', size: 11 }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      });
+    }
+
+    /* ---------- RENDER TABLE + CLICK HANDLER (ATUALIZADO) ---------- */
+    function renderTable(data) {
+      const map = {};
+      data.forEach(r => {
+        if (!map[r.id_rota]) map[r.id_rota] = { val: 0, n: 0, c: 0 };
+        // Cálculo do faturamento líquido para a tabela
+        const g = (r.id_grupo || '').toString().toLowerCase();
+        const valor = r.valor || 0;
+        if (g.includes('venda')) map[r.id_rota].val += valor;
+        else if (g.includes('dev') || g.includes('bonif')) map[r.id_rota].val -= valor;
+        
+        map[r.id_rota].n += r.notas;
+        map[r.id_rota].c += r.clientes;
+      });
+
+      const html = Object.entries(map)
+        .sort((a,b) => b[1].val - a[1].val)
+        .map(([name, d]) => {
+          return `<tr>
+            <td class="font-bold">${name}</td>
+            <td>${fmtBRL(d.val)}</td>
+            <td>${Math.round(d.n).toLocaleString()}</td>
+            <td>${Math.round(d.c).toLocaleString()}</td>
+            <td style="text-align:right;"><button class="btn-rota" data-rota="${encodeURIComponent(name)}">Abrir</button></td>
+          </tr>`;
+        })
+        .join('');
+      document.getElementById('routes-body').innerHTML = html;
+
+      // Evento de clique no botão Abrir
+      document.querySelectorAll('.btn-rota').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          selectedRoute = decodeURIComponent(e.currentTarget.dataset.rota);
+          
+          // 1. Destaque visual na tabela
+          document.querySelectorAll('#routes-body tr').forEach(tr => tr.style.background = '');
+          e.currentTarget.closest('tr').style.background = '#e0f2fe'; // Azul claro de seleção
+
+          // 2. Filtrar dados apenas desta rota para o resumo
+          const routeData = rawData.filter(r => r.id_rota === selectedRoute);
+          
+          const fatBruto = routeData.filter(r => (r.id_grupo||'').toLowerCase().includes('venda')).reduce((s,r)=>s+r.valor,0);
+          const devolucoes = routeData.filter(r => (r.id_grupo||'').toLowerCase().includes('dev')).reduce((s,r)=>s+r.valor,0);
+          const bonificacoes = routeData.filter(r => (r.id_grupo||'').toLowerCase().includes('bonif')).reduce((s,r)=>s+r.valor,0);
+          const fatLiquido = fatBruto - devolucoes - bonificacoes;
+          
+          const totalNotas = routeData.reduce((s,r) => s + (r.notas || 0), 0);
+          const totalClientes = routeData.reduce((s,r) => s + (r.clientes || 0), 0);
+
+          // 3. Atualizar o Painel de Resumo
+          const summaryContainer = document.getElementById('route-summary-container');
+          summaryContainer.innerHTML = `
+            <div style="background:#fff; border:2px solid #004a99; border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 4px 15px rgba(0,0,0,0.1)">
+              <h3 style="color:#004a99; font-weight:800; font-size:18px; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px">
+                📊 Detalhes da Rota: ${selectedRoute}
+              </h3>
+              <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px">
+                <div>
+                  <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase">Faturamento Líquido</span>
+                  <div style="font-size:18px; font-weight:800; color:#1e293b">${fmtBRL(fatLiquido)}</div>
+                </div>
+                <div>
+                  <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase">Total de Notas</span>
+                  <div style="font-size:18px; font-weight:800; color:#1e293b">${totalNotas.toLocaleString()}</div>
+                </div>
+                <div>
+                  <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase">Total de Clientes</span>
+                  <div style="font-size:18px; font-weight:800; color:#1e293b">${totalClientes.toLocaleString()}</div>
+                </div>
+              </div>
+              <div style="margin-top:15px; font-size:12px; color:#64748b">
+                Bruto: ${fmtBRL(fatBruto)} | Dev: ${fmtBRL(devolucoes)} | Bonif: ${fmtBRL(bonificacoes)}
+              </div>
+            </div>
+          `;
+
+          // 4. Mostrar Cidades automaticamente
+          const cities = [...new Set(routeData.map(r => r.id_cidade))].filter(Boolean).sort();
+          const citiesDiv = document.getElementById('cities-of-route');
+          const ul = document.getElementById('cities-list');
+          
+          ul.innerHTML = cities.map(c => `<li>${c}</li>`).join('') || '<li>Sem cidades listadas</li>';
+          citiesDiv.style.display = 'block';
+          
+          // Scroll suave para o resumo
+          summaryContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+      });
+    }
+
+    function setupNav() {
+      document.getElementById('link-dashboard').onclick = () => {
+        document.getElementById('dashboard-view').style.display = 'grid';
+        document.getElementById('main-charts').style.display = 'grid';
+        document.getElementById('routes-view').style.display = 'none';
+        document.getElementById('link-dashboard').classList.add('active');
+        document.getElementById('link-rotas').classList.remove('active');
+      };
+
+      document.getElementById('link-rotas').onclick = () => {
+        document.getElementById('dashboard-view').style.display = 'none';
+        document.getElementById('main-charts').style.display = 'none';
+        document.getElementById('routes-view').style.display = 'block';
+        document.getElementById('link-rotas').classList.add('active');
+        document.getElementById('link-dashboard').classList.remove('active');
+      };
+
+      document.getElementById('btn-toggle-view').onclick = (e) => {
+        isQuarterView = !isQuarterView;
+        e.target.innerText = isQuarterView ? 'Mostrar Mensal' : 'Mostrar Quadrimestre';
+        updateDashboard();
+      };
+    }
+
+    function setupRouteCityButton() {
+      document.getElementById('btn-show-cities').addEventListener('click', () => {
+        if (!selectedRoute) {
+          alert('Selecione uma rota na tabela clicando em "Abrir" ou filtre para uma rota antes.');
+          return;
+        }
+        // Reuse the table click behaviour: build cities from selectedRoute
+        const routeData = rawData.filter(r => r.id_rota === selectedRoute);
+        const cities = [...new Set(routeData.map(r => r.id_cidade))].filter(Boolean).sort();
+        const ul = document.getElementById('cities-list');
+        ul.innerHTML = cities.map(c => `<li>${c}</li>`).join('') || '<li>Sem cidades listadas</li>';
+        document.getElementById('cities-of-route').style.display = 'block';
+        document.getElementById('cities-of-route').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
