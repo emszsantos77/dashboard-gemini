@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>JBS Frios - Dashboard Profissional</title>
 
-  <!-- Bibliotecas: Tailwind, Chart.js, DataLabels, Choices.js -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -17,52 +16,113 @@
     :root{ --sidebar-w:260px; --bg:#f1f5f9; --jbs-blue:#004a99; --card-border:#e6eef6; }
     html,body{height:100%; margin:0; font-family:'Inter',sans-serif; background:var(--bg); color:#0f172a;}
 
-    /* Sidebar Fixa */
-    .sidebar{position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-w); background:linear-gradient(180deg,#063a80 0%, #063a80 100%); color:white; padding:28px 20px; z-index:20; display:flex; flex-direction:column; gap:18px}
+    /* SIDEBAR */
+    .sidebar{position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-w); background:linear-gradient(180deg,#063a80 0%, #063a80 100%); color:white; padding:28px 20px; z-index:60; display:flex; flex-direction:column; gap:18px; transition:transform .18s ease}
+    .sidebar.closed{transform:translateX(-110%);}
     .logo img{height:44px}
     .nav a{display:block; padding:12px; border-radius:10px; color:rgba(255,255,255,0.95); text-decoration:none; margin-bottom:6px; font-weight:600; cursor:pointer}
     .nav a.active{background:rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.1);}
+    .sidebar-close { display:none; position:absolute; right:12px; top:12px; background:transparent; border:none; color:white; font-size:18px; cursor:pointer; }
 
-    /* Área Principal */
+    /* MAIN */
     .main{margin-left:var(--sidebar-w); padding:28px; min-height:100vh; box-sizing:border-box}
     .container{max-width:1200px; margin:0 auto}
 
     .page-title{font-size:28px; font-weight:800; color:#0f172a; line-height:1.05}
     .page-sub{color:#475569; margin-top:6px}
 
-    /* Barra de Filtros (Multi-select) */
     .filter-bar { background:#fff; padding:18px; border-radius:12px; border:1px solid #e2e8f0; display:flex; flex-wrap:wrap; gap:20px; align-items:flex-end; margin-bottom:20px; box-shadow:0 2px 10px rgba(0,0,0,0.02) }
     .filter-group { display:flex; flex-direction:column; gap:6px; flex: 1; min-width:180px; }
     .filter-group label { font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.4px }
 
-    /* Customização Choices.js para ficar limpo */
     .choices__inner { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; min-height: 42px !important; padding: 4px !important; }
     .choices__list--multiple .choices__item { background-color: #004a99 !important; border: none !important; border-radius: 4px !important; font-weight: 600 !important; }
 
-    /* Cards KPI */
-    .kpi-row{display:grid; grid-template-columns:repeat(5,1fr); gap:18px; margin-bottom:25px}
-    .card{background:white; border-radius:12px; padding:20px; border:1px solid var(--card-border); box-shadow:0 4px 12px rgba(0,0,0,0.03)}
-    .card .title{font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase}
-    .card .value{font-size:22px; font-weight:800; margin-top:8px; color: #1e293b;}
-    .card .meta{font-size:12px; font-weight: 600; margin-top:8px}
+    .kpi-row{display:grid; grid-template-columns:repeat(5,1fr); gap:15px; margin-bottom:25px}
+    .card{background:white; border-radius:10px; padding:14px 16px 10px 16px; border:1px solid var(--card-border); box-shadow:0 2px 8px rgba(0,0,0,0.02); display:flex; flex-direction:column; justify-content:space-between;}
+    .card .title{font-size:10px; color:#64748b; font-weight:700; text-transform:uppercase; line-height:1; margin-bottom:4px;}
+    .card .value{font-size:17px; font-weight:800; color: #1e293b; line-height:1.1;}
+    .card .meta{font-size:10.5px; font-weight:600; margin-top:4px; line-height:1.1}
 
-    /* Gráficos */
     .charts-grid{display:grid; grid-template-columns: 1fr; gap:25px;}
-    .chart-card{background:white; border-radius:12px; padding:22px; border:1px solid var(--card-border); box-shadow:0 4px 12px rgba(0,0,0,0.03)}
-    .chart-title{font-size: 18px; font-weight:700; margin-bottom:15px; color: #1e293b;}
+    .chart-card{background:white; border-radius:12px; padding:22px; border:1px solid var(--card-border); box-shadow:0 4px 12px rgba(0,0,0,0.03); overflow:hidden}
+    .chart-title{font-size:18px; font-weight:700; margin-bottom:15px; color:#1e293b;}
 
-    .lower-grid{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:25px}
+    .side-charts{display:flex; gap:18px; align-items:stretch}
+    .side-charts .chart-half{flex:1; min-width:0; height:260px; max-height:260px}
 
-    table { width:100%; border-collapse:collapse; }
-    thead th { text-align:left; color:#64748b; font-size:11px; padding: 12px 8px; border-bottom: 2px solid #f1f5f9; text-transform:uppercase; }
-    tbody td { padding:14px 8px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
-    .btn-rota { background:#004a99; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-weight:700; }
-    .cities-list li { padding:6px 0; border-bottom:1px dashed #e6eef6; }
+    /* New: wrapper to control canvas height and allow horizontal scroll */
+    .chart-wrap { width:100%; height:350px; max-height:350px; min-height:220px; overflow-x:auto; overflow-y:hidden; display:block; }
+    .chart-wrap canvas { display:block; width:100% !important; height:100% !important; }
+
+    table{width:100%; border-collapse:collapse}
+    thead th{text-align:left; color:#64748b; font-size:11px; padding:12px 8px; border-bottom:2px solid #f1f5f9; text-transform:uppercase}
+    tbody td{padding:12px 8px; border-bottom:1px solid #f1f5f9; font-size:13px; vertical-align:middle}
+
+    .btn-rota{background:#004a99; color:#fff; border:none; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:700; font-size:12px; transition:0.2s}
+    .btn-rota:hover{background:#063a80}
+    .btn-export{background:#f8fafc; color:#004a99; border:1px solid #004a99; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:700; font-size:11px; margin-left:5px; transition:0.2s}
+    .btn-export:hover{background:#004a99; color:#fff}
+
+    .route-summary-row td{background:#f8fafc; padding:18px; border-bottom:1px solid #e6eef6}
+    .city-line{display:flex; justify-content:space-between; padding:6px; border-bottom:1px dashed #e2e8f0}
+
+    /* Insights view */
+    .insights-grid{display:grid; grid-template-columns:2fr 1fr; gap:18px}
+    .insight-card{background:white; padding:16px; border-radius:10px; border:1px solid #e6eef6}
+    .insight-title{font-weight:800; margin-bottom:10px; color:#0f172a}
+
+    #suggestions-card{display:none; margin-top:12px}
+
+    /* overlay for mobile sidebar */
+    .overlay { position:fixed; left:0; top:0; right:0; bottom:0; background: rgba(0,0,0,0.35); z-index:50; display:none; }
+    .overlay.show { display:block; }
+
+    /* MOBILE ADAPTIVE */
+    .mobile-topbar { display:none; position:fixed; left:0; right:0; top:0; height:56px; background:rgba(255,255,255,0.95); z-index:58; display:flex; align-items:center; gap:12px; padding:0 12px; box-shadow:0 2px 6px rgba(0,0,0,0.05)}
+    .mobile-topbar .hamburger { width:40px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#fff; border:1px solid #e2e8f0; cursor:pointer; }
+    .mobile-spacer { height:56px; }
+
+    @media (max-width:1000px){
+      .kpi-row{grid-template-columns:repeat(2,1fr)}
+      .side-charts{flex-direction:column}
+      .insights-grid{grid-template-columns:1fr}
+      .sidebar{transform:translateX(-110%); position:fixed}
+      .sidebar.open{transform:translateX(0)}
+      .sidebar-close { display:block; }
+      .main{margin-left:0; padding:14px}
+      .mobile-topbar{display:flex}
+      .mobile-spacer{display:block}
+      .filter-bar{padding:12px; gap:10px}
+      .filter-group{min-width:140px; flex-basis:100%}
+      .chart-wrap { height:260px; max-height:260px; min-height:200px; }
+      .side-charts .chart-half{height:200px; max-height:200px}
+    }
+
+    @media (max-width:480px){
+      .kpi-row{grid-template-columns:repeat(1,1fr)}
+      .filter-group{min-width:100%; flex-basis:100%}
+      .page-title{font-size:20px}
+      .chart-card{padding:14px}
+      .insight-card{padding:12px}
+      .sidebar { width:220px; }
+    }
   </style>
 </head>
 <body>
+  <!-- overlay to close sidebar on mobile -->
+  <div id="overlay" class="overlay" aria-hidden="true"></div>
 
-  <aside class="sidebar">
+  <!-- Mobile topbar -->
+  <div class="mobile-topbar" id="mobileTopbar" style="display:none;">
+    <div class="hamburger" id="btnToggleSidebar" aria-label="Abrir menu">
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="2" rx="1" fill="#004a99"/><rect y="6" width="18" height="2" rx="1" fill="#004a99"/><rect y="12" width="18" height="2" rx="1" fill="#004a99"/></svg>
+    </div>
+    <div style="font-weight:700;color:#0f172a">JBS FRIOS</div>
+  </div>
+
+  <aside class="sidebar closed" id="sidebar" role="navigation" aria-label="Menu lateral">
+    <button id="btnSidebarClose" class="sidebar-close" aria-label="Fechar menu">✕</button>
     <div class="logo" style="display:flex;align-items:center;gap:10px">
       <img src="./logo.png" alt="JBS" onerror="this.style.display='none'">
       <div style="font-weight:800;font-size:18px">JBS <span style="font-weight:300;color:#cfe0ff">FRIOS</span></div>
@@ -70,121 +130,117 @@
     <nav class="nav" style="margin-top:10px">
       <a id="link-dashboard" class="active">Visão Executiva</a>
       <a id="link-rotas">Relatórios de Rotas</a>
+      <a id="link-insights">Insights sobre o negócio</a>
     </nav>
   </aside>
 
-  <main class="main">
+  <main class="main" id="mainContent">
     <div class="container">
       <div style="margin-bottom:20px">
         <h1 class="page-title">Análise de Faturamento Mensal</h1>
         <p class="page-sub">Análise consolidada de faturamento e logística</p>
       </div>
 
-      <!-- Filtros Multi-seleção -->
-      <div class="filter-bar">
-        <div class="filter-group">
-          <label>Ano</label>
-          <select id="filter-year" multiple></select>
-        </div>
-        <div class="filter-group">
-          <label>Mês</label>
-          <select id="filter-month" multiple>
-            <option value="jan">Janeiro</option><option value="fev">Fevereiro</option><option value="mar">Março</option>
-            <option value="abr">Abril</option><option value="mai">Maio</option><option value="jun">Junho</option>
-            <option value="jul">Julho</option><option value="ago">Agosto</option><option value="set">Setembro</option>
-            <option value="out">Outubro</option><option value="nov">Novembro</option><option value="dez">Dezembro</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Cidade</label>
-          <select id="filter-city" multiple></select>
-        </div>
-        <div class="filter-group">
-          <label>Rota</label>
-          <select id="filter-route" multiple></select>
-        </div>
-        <div class="filter-group">
-          <label>Operação</label>
-          <select id="filter-operation" multiple></select>
-        </div>
+      <!-- FILTERS -->
+      <div class="filter-bar" id="filterBar">
+        <div class="filter-group"><label>Ano</label><select id="filter-year" multiple></select></div>
+        <div class="filter-group"><label>Mês</label><select id="filter-month" multiple>
+          <option value="jan">Janeiro</option><option value="fev">Fevereiro</option><option value="mar">Março</option>
+          <option value="abr">Abril</option><option value="mai">Maio</option><option value="jun">Junho</option>
+          <option value="jul">Julho</option><option value="ago">Agosto</option><option value="set">Setembro</option>
+          <option value="out">Outubro</option><option value="nov">Novembro</option><option value="dez">Dezembro</option>
+        </select></div>
+        <div class="filter-group"><label>Cidade</label><select id="filter-city" multiple></select></div>
+        <div class="filter-group"><label>Rota</label><select id="filter-route" multiple></select></div>
+        <div class="filter-group"><label>Operação</label><select id="filter-operation" multiple></select></div>
       </div>
 
-      <!-- KPIs -->
-      <div class="kpi-row" id="dashboard-view">
-        <div class="card">
-          <div class="title">Faturamento Bruto</div>
-          <div class="value" id="kpi-bruto">R$ 0,00</div>
-          <div class="meta" id="kpi-bruto-pct">—</div>
+      <!-- DASHBOARD VIEW -->
+      <div id="dashboard-view">
+        <div class="kpi-row">
+          <div class="card"><div><div class="title">Faturamento Bruto</div><div class="value" id="kpi-bruto">R$ 0,00</div></div><div class="meta" id="kpi-bruto-pct">—</div></div>
+          <div class="card"><div><div class="title">Faturamento Líquido</div><div class="value" id="kpi-liquido">R$ 0,00</div></div><div class="meta" id="kpi-liquido-pct">—</div></div>
+          <div class="card"><div><div class="title">Bonificações</div><div class="value" id="kpi-bon">R$ 0,00</div></div><div class="meta" id="kpi-bon-pct">—</div></div>
+          <div class="card"><div><div class="title">Devoluções</div><div class="value" id="kpi-dev">R$ 0,00</div></div><div class="meta" id="kpi-dev-pct">—</div></div>
+          <div class="card">
+            <div><div class="title">Atendimento</div>
+            <div style="display:flex; gap:12px; margin-top:4px">
+              <div><div style="font-size:15px; font-weight:800" id="kpi-notas">0</div><div style="font-size:9px; color:#64748b">Notas</div><div class="meta" id="kpi-notas-pct" style="margin-top:2px">—</div></div>
+              <div><div style="font-size:15px; font-weight:800" id="kpi-clientes">0</div><div style="font-size:9px; color:#64748b">Clientes</div><div class="meta" id="kpi-clientes-pct" style="margin-top:2px">—</div></div>
+            </div></div>
+          </div>
         </div>
-        <div class="card">
-          <div class="title">Faturamento Líquido</div>
-          <div class="value" id="kpi-liquido">R$ 0,00</div>
-          <div class="meta" id="kpi-liquido-pct">—</div>
-        </div>
-        <div class="card">
-          <div class="title">Bonificações</div>
-          <div class="value" id="kpi-bon">R$ 0,00</div>
-          <div class="meta" id="kpi-bon-pct">—</div>
-        </div>
-        <div class="card">
-          <div class="title">Devoluções</div>
-          <div class="value" id="kpi-dev">R$ 0,00</div>
-          <div class="meta" id="kpi-dev-pct">—</div>
-        </div>
-        <div class="card">
-          <div class="title">Atendimento</div>
-          <div style="display:flex; gap:15px; margin-top:8px">
-            <div>
-              <div style="font-size:18px; font-weight:800" id="kpi-notas">0</div>
-              <div style="font-size:10px; color:#64748b">Notas (média mensal)</div>
-              <div class="meta" id="kpi-notas-pct">—</div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
+              <div class="chart-title">Evolução de Vendas (Bruto)</div>
+              <button id="btn-toggle-view" class="bg-slate-100 border border-slate-200 px-4 py-2 rounded-lg font-bold text-sm hover:bg-slate-200 transition">Mostrar Quadrimestre</button>
             </div>
-            <div>
-              <div style="font-size:18px; font-weight:800" id="kpi-clientes">0</div>
-              <div style="font-size:10px; color:#64748b">Clientes (média mensal)</div>
-              <div class="meta" id="kpi-clientes-pct">—</div>
+            <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-title">Análise período - Faturamento Líquido</div>
+            <div class="side-charts">
+              <div class="chart-half"><div style="font-weight:700; margin-bottom:8px; color:#475569; font-size:13px">Melhores Períodos</div><div class="chart-wrap"><canvas id="bestMonthsChart"></canvas></div></div>
+              <div class="chart-half"><div style="font-weight:700; margin-bottom:8px; color:#475569; font-size:13px">Piores Períodos</div><div class="chart-wrap"><canvas id="worstMonthsChart"></canvas></div></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Gráficos Principais -->
-      <div id="main-charts" class="charts-grid">
-        <div class="chart-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px">
-            <div class="chart-title">Evolução de Vendas</div>
-            <button id="btn-toggle-view" class="bg-slate-100 border border-slate-200 px-4 py-2 rounded-lg font-bold text-sm hover:bg-slate-200 transition">Mostrar Quadrimestre</button>
-          </div>
-          <div style="height:350px"><canvas id="mainChart"></canvas></div>
-        </div>
-
-        <div class="chart-card">
-          <div class="chart-title">Composição da Operação</div>
-          <div style="height:300px"><canvas id="groupChart"></canvas></div>
-        </div>
-      </div>
-
-      <!-- Relatório de Rotas (Oculto por padrão) -->
+      <!-- ROUTES VIEW -->
       <div id="routes-view" style="display:none" class="chart-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
-          <div class="chart-title">Relatório Detalhado por Rota</div>
-          <div>
-            <button id="btn-show-cities" style="padding:8px 12px; border-radius:8px; border:1px solid #e6eef6; background:#fff; cursor:pointer;">Mostrar Cidades da Rota</button>
-          </div>
-        </div>
-
-        <div style="overflow-x:auto; margin-bottom:10px">
-          <table id="routes-table">
-            <thead><tr><th>Rota</th><th>Faturamento Líquido</th><th>Notas</th><th>Clientes</th><th></th></tr></thead>
+        <div class="chart-title">Relatório Detalhado por Rota</div>
+        <div style="overflow-x:auto;"><table id="routes-table">
+            <thead><tr><th>Rota</th><th>Faturamento Líquido</th><th>Notas</th><th>Clientes</th><th style="text-align:right">Ações</th></tr></thead>
             <tbody id="routes-body"></tbody>
-          </table>
-        </div>
+        </table></div>
+      </div>
 
-        <div id="route-summary-container" style="margin-top:6px"></div>
+      <!-- INSIGHTS VIEW -->
+      <div id="insights-view" style="display:none" class="chart-card">
+        <div class="chart-title">Insights sobre o negócio</div>
+        <div class="insights-grid">
+          <div>
+            <div class="insight-card">
+              <div class="insight-title">Diagnóstico Automático</div>
+              <div style="margin-bottom:8px">Resumo rápido dos principais movimentos e drivers (baseado no período filtrado):</div>
+              <div id="auto-diagnosis" style="min-height:140px; color:#0f172a"><i>Pressione "Gerar diagnóstico" para começar.</i></div>
+              <div style="margin-top:10px; display:flex; gap:10px">
+                <button id="btn-run-diagnosis" class="btn-rota" style="background:#0b6efd">Gerar diagnóstico</button>
+                <button id="btn-clear-diagnosis" class="btn-export">Limpar diagnóstico</button>
+                <button id="btn-suggestions" class="btn-export">Sugestões de ação</button>
+              </div>
 
-        <div id="cities-of-route" style="display:none; max-height:300px; overflow:auto; margin-top:10px; border:1px solid #e6eef6; border-radius:8px; padding:10px; background:#fafafa;">
-          <strong style="display:block; margin-bottom:8px">Cidades na rota:</strong>
-          <ul id="cities-list" class="cities-list" style="list-style:none; padding-left:0; margin:0;"></ul>
+              <div id="suggestions-card" class="insight-card" style="display:none">
+                <div style="font-weight:800; margin-bottom:8px">Sugestões de Ação (dinâmicas)</div>
+                <div id="suggestions-content" style="line-height:1.4"></div>
+                <div style="margin-top:10px; text-align:right">
+                  <button id="close-suggestions" class="btn-export">Fechar</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="insight-card" style="margin-top:12px">
+              <div class="insight-title">Observações automatizadas</div>
+              <ul id="auto-notes" style="margin:0; padding-left:18px; color:#0f172a"><li>Sem anotações automáticas.</li></ul>
+            </div>
+          </div>
+
+          <aside>
+            <div class="insight-card">
+              <div class="insight-title">Pergunte ao Assistente (IA local)</div>
+              <div style="font-size:13px; color:#475569; margin-bottom:8px">Ex.: "por que meu faturamento em jan de 2025 foi menor do que jun de 2025" ou "quais ações imediatas para evitar queda"</div>
+              <textarea id="ai-question" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid #e6eef6"></textarea>
+              <div style="display:flex; gap:8px; margin-top:8px">
+                <button id="btn-ask" class="btn-rota">Perguntar</button>
+                <button id="btn-clear-ai" class="btn-export" style="margin-left:auto">Limpar</button>
+              </div>
+              <div id="ai-response" style="margin-top:12px; min-height:120px; background:#fbfeff; border:1px solid #e6eef6; padding:12px; border-radius:8px; overflow:auto"></div>
+            </div>
+          </aside>
         </div>
       </div>
 
@@ -192,63 +248,93 @@
   </main>
 
   <script>
-    // Plugins and helpers
+    // --- CONFIG: timeout for external AI (ms) ---
+    const AI_TIMEOUT_MS = 2000; // 2 seconds
+
+    // Register plugin and disable datalabels globally so values only show in tooltip on hover
     Chart.register(ChartDataLabels);
-    const fmtBRL = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v||0);
-    const monthMap = { jan:1, fev:2, mar:3, abr:4, mai:5, jun:6, jul:7, ago:8, set:9, out:10, nov:11, dez:12 };
-    
+    Chart.defaults.plugins.datalabels = { display: false };
+
+    const fmtBRL = v => new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v||0));
+    const monthMap = {
+      jan:1, janeiro:1, fev:2, fevereiro:2, mar:3, março:3, abril:4, abr:4, mai:5, maio:5,
+      jun:6, junho:6, jul:7, julho:7, ago:8, agosto:8, set:9, setembro:9, out:10, outubro:10,
+      nov:11, novembro:11, dez:12, dezembro:12
+    };
+
     let rawData = [], choices = {}, charts = {}, isQuarterView = false;
     let selectedRoute = null;
+    let openSummaryRow = null;
 
+    // ---------- UI: sidebar & overlay ----------
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
+    const btnToggleSidebar = document.getElementById('btnToggleSidebar');
+    const btnSidebarClose = document.getElementById('btnSidebarClose');
+
+    function openSidebar() {
+      sidebar.classList.remove('closed');
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('open');
+      sidebar.classList.add('closed');
+      overlay.classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    if (btnToggleSidebar) btnToggleSidebar.onclick = (e)=>{ openSidebar(); };
+    if (btnSidebarClose) btnSidebarClose.onclick = (e)=>{ closeSidebar(); };
+    if (overlay) overlay.onclick = ()=>{ closeSidebar(); };
+
+    document.querySelectorAll('.nav a').forEach(a=>{
+      a.addEventListener('click', () => {
+        if (window.matchMedia('(max-width:1000px)').matches) setTimeout(closeSidebar, 80);
+      });
+    });
+
+    // ---------- Data loading & helpers ----------
     async function init() {
       try {
-        const res = await fetch('./Uploads/Rota_Valor_clean.json');
-        rawData = await res.json();
-        
-        // Normalizar dados - garantir campos usados
+        try {
+          const res = await fetch('./Uploads/Rota_Valor_clean.json');
+          if (res.ok) rawData = await res.json();
+        } catch(e) { console.log('Sem arquivo de dados pre-carregado (ok).'); }
+
         rawData.forEach(r => {
-          r.id_valor = r.id_valor ?? r.valor ?? r.id_valor;
-          r.valor = Number(String(r.id_valor).replace(/[^\d\-,.]/g,'').replace(',','.')) || 0;
+          r.valor = Number(String(r.id_valor || r.valor || 0).replace(/[^\d\-,.]/g,'').replace(',','.')) || 0;
           r.notas = Number(r.id_quantidade_notas || r.notas || 0) || 0;
           r.clientes = Number(r.id_quantidade_clientes || r.clientes || 0) || 0;
-          r.mesNum = monthMap[(r.id_mes || '').toString().toLowerCase()] || (r.mes || r.mesNum) || 1;
+          const mm = (r.id_mes || '').toString().toLowerCase();
+          r.mesNum = monthMap[mm] || (Number(mm) || 1);
         });
 
         setupFilters();
-        updateDashboard();
+        updateDashboard(true);
         setupNav();
-        setupRouteCityButton();
+        setupInsights();
+        setupMobile();
       } catch (e) {
-        document.body.innerHTML = `<div class="p-10 text-red-600 font-bold">Erro ao carregar dados: ${e.message}</div>`;
+        console.error('Erro carregando dados:', e);
+        document.body.insertAdjacentHTML('afterbegin', `<div style="padding:16px;background:#ffeeee;color:#900;font-weight:700">Erro ao carregar dados: ${e.message}</div>`);
       }
     }
 
-    function setupFilters() {
-      const config = { removeItemButton: true, itemSelectText: '', shouldSort: false };
-      const years = [...new Set(rawData.map(r => String(r.id_ano)) )].sort();
-      const cities = [...new Set(rawData.map(r => r.id_cidade))].filter(Boolean).sort();
-      const routes = [...new Set(rawData.map(r => r.id_rota))].filter(Boolean).sort();
-      const ops = [...new Set(rawData.map(r => r.id_operação))].filter(Boolean).sort();
-
-      choices.year = new Choices('#filter-year', config).setChoices(years.map(v=>({value:v, label:v})));
-      choices.month = new Choices('#filter-month', config);
-      choices.city = new Choices('#filter-city', config).setChoices(cities.map(v=>({value:v, label:v})));
-      choices.route = new Choices('#filter-route', config).setChoices(routes.map(v=>({value:v, label:v})));
-      choices.op = new Choices('#filter-operation', config).setChoices(ops.map(v=>({value:v, label:v})));
-
-      Object.values(choices).forEach(c => c.passedElement.element.addEventListener('change', updateDashboard));
+    function getFiltersFromChoices() {
+      return {
+        years: (choices.year && choices.year.getValue ? choices.year.getValue(true) : []).map(String),
+        months: (choices.month && choices.month.getValue ? choices.month.getValue(true) : []).map(v => String(v).toLowerCase()),
+        cities: (choices.city && choices.city.getValue ? choices.city.getValue(true) : []),
+        routes: (choices.route && choices.route.getValue ? choices.route.getValue(true) : []),
+        ops: (choices.op && choices.op.getValue ? choices.op.getValue(true) : [])
+      };
     }
 
-    function updateDashboard() {
-      const filters = {
-        years: (choices.year.getValue ? choices.year.getValue(true) : []).map(String),
-        months: (choices.month.getValue ? choices.month.getValue(true) : []).map(v => String(v).toLowerCase()),
-        cities: (choices.city.getValue ? choices.city.getValue(true) : []),
-        routes: (choices.route.getValue ? choices.route.getValue(true) : []),
-        ops: (choices.op.getValue ? choices.op.getValue(true) : [])
-      };
-
-      const filtered = rawData.filter(r => {
+    function getFilteredData() {
+      const filters = getFiltersFromChoices();
+      return rawData.filter(r => {
         if (filters.years.length && !filters.years.includes(String(r.id_ano))) return false;
         if (filters.months.length && !filters.months.includes(String(r.id_mes).toLowerCase())) return false;
         if (filters.cities.length && !filters.cities.includes(r.id_cidade)) return false;
@@ -256,308 +342,804 @@
         if (filters.ops.length && !filters.ops.includes(r.id_operação)) return false;
         return true;
       });
+    }
 
+    // ---------- Filters ----------
+    function setupFilters() {
+      const config = { removeItemButton: true, itemSelectText: '', shouldSort: false };
+      const years = [...new Set(rawData.map(r => String(r.id_ano)))].filter(Boolean).sort();
+      const cities = [...new Set(rawData.map(r => r.id_cidade))].filter(Boolean).sort();
+      const routes = [...new Set(rawData.map(r => r.id_rota))].filter(Boolean).sort();
+      const ops = [...new Set(rawData.map(r => r.id_operação))].filter(Boolean).sort();
+
+      choices.year = new Choices('#filter-year', config).setChoices(years.map(v=>({value:v,label:v})));
+      choices.month = new Choices('#filter-month', config);
+      choices.city = new Choices('#filter-city', config).setChoices(cities.map(v=>({value:v,label:v})));
+      choices.route = new Choices('#filter-route', config).setChoices(routes.map(v=>({value:v,label:v})));
+      choices.op = new Choices('#filter-operation', config).setChoices(ops.map(v=>({value:v,label:v})));
+
+      Object.values(choices).forEach(c => {
+        try { c.passedElement.element.addEventListener('change', () => updateDashboard(true)); } catch(e){ }
+      });
+    }
+
+    // ---------- Dashboard rendering (same as before) ----------
+    function updateDashboard(keepOpen = false) {
+      const filtered = getFilteredData();
       renderKPIs(filtered);
       renderMainChart(filtered);
-      renderGroupChart(filtered);
+      renderBestWorstCharts(filtered);
       renderTable(filtered);
+
+      if (keepOpen && selectedRoute) {
+        setTimeout(() => {
+          const btn = document.querySelector(`.btn-rota[data-rota="${encodeURIComponent(selectedRoute)}"]`);
+          if (btn) btn.click();
+        }, 60);
+      }
+    }
+
+    function calcGrowthRate(arr) {
+      if (!arr || arr.length < 2) return 0;
+      let growthSum = 0, count = 0;
+      for (let i = 1; i < arr.length; i++) {
+        const prev = arr[i-1];
+        if (prev === 0) continue;
+        growthSum += (arr[i] - prev) / Math.abs(prev);
+        count++;
+      }
+      return count > 0 ? (growthSum / count) * 100 : 0;
     }
 
     function renderKPIs(data) {
-      const isVenda = g => (g || '').toString().toLowerCase().includes('venda');
-      const isDev = g => (g || '').toString().toLowerCase().includes('dev');
-      const isBon = g => (g || '').toString().toLowerCase().includes('bonif');
+      const monthKeys = [...new Set(data.map(r => `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`))].sort();
+      const brutoArr = [], devArr = [], bonArr = [], liqArr = [], nArr = [], cArr = [];
 
-      const bruto = data.filter(r => isVenda(r.id_grupo)).reduce((s,r) => s + r.valor, 0);
-      const dev = data.filter(r => isDev(r.id_grupo)).reduce((s,r) => s + r.valor, 0);
-      const bon = data.filter(r => isBon(r.id_grupo)).reduce((s,r) => s + r.valor, 0);
-      const liquido = bruto - dev - bon;
+      monthKeys.forEach(mk => {
+        const b = data.filter(r => r.id_grupo === 'Vendas' && `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.valor,0);
+        const d = data.filter(r => r.id_grupo === 'Dev. Vendas' && `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.valor,0);
+        const bo = data.filter(r => r.id_grupo === 'Bonificação' && `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.valor,0);
+        brutoArr.push(b); devArr.push(d); bonArr.push(bo); liqArr.push(b - (d + bo));
+        nArr.push(data.filter(r => `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.notas,0));
+        cArr.push(data.filter(r => `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.clientes,0));
+      });
 
-      function calcMoMGrowth(arr) {
-        if (arr.length < 2) return 0;
-        let growthSum = 0; let count = 0;
-        for (let i = 1; i < arr.length; i++) {
-          const prev = arr[i-1];
-          if (prev === 0) continue;
-          growthSum += (arr[i] - prev) / Math.abs(prev);
-          count++;
-        }
-        return count > 0 ? (growthSum / count) * 100 : 0;
-      }
+      const formatG = g => (isNaN(g) ? '—' : `<span style="color:${g>=0? '#16a34a' : '#ef4444'}">${g>=0?'+':''}${g.toFixed(1)}% crescimento médio mensal</span>`);
 
-      // monthsList aligned across data
-      const monthsSet = new Set();
-      data.forEach(r => monthsSet.add(`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`));
-      const monthsList = [...monthsSet].sort();
-
-      function buildArrFor(filterFunc) {
-        return monthsList.map(ym => data.filter(r => (`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === ym) && filterFunc(r)).reduce((s,r) => s + r.valor, 0));
-      }
-
-      const brutoArrAligned = buildArrFor(r => isVenda(r.id_grupo));
-      const devArrAligned = buildArrFor(r => isDev(r.id_grupo));
-      const bonArrAligned = buildArrFor(r => isBon(r.id_grupo));
-      const liquidoArrAligned = monthsList.map((ym,i) => (brutoArrAligned[i] || 0) - (devArrAligned[i] || 0) - (bonArrAligned[i] || 0));
-
-      const brutoGrowth = calcMoMGrowth(brutoArrAligned);
-      const devGrowth = calcMoMGrowth(devArrAligned);
-      const bonGrowth = calcMoMGrowth(bonArrAligned);
-      const liquidoGrowth = calcMoMGrowth(liquidoArrAligned);
-
-      const groupSimpleByMonth = (field) => {
-        const map = {};
-        data.forEach(r => {
-          const ym = `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
-          map[ym] = (map[ym] || 0) + (Number(r[field] || 0));
-        });
-        return Object.entries(map).sort((a,b) => a[0].localeCompare(b[0])).map(e => e[1]);
-      };
-      const notasArr = groupSimpleByMonth('notas');
-      const clientesArr = groupSimpleByMonth('clientes');
-      const avgNotas = notasArr.length ? notasArr.reduce((a,b) => a+b, 0)/notasArr.length : 0;
-      const avgClientes = clientesArr.length ? clientesArr.reduce((a,b) => a+b, 0)/clientesArr.length : 0;
-      const notasGrowth = calcMoMGrowth(notasArr);
-      const clientesGrowth = calcMoMGrowth(clientesArr);
-
-      function formatGrowthText(growth) {
-        const sign = growth >= 0 ? '+' : '';
-        const color = growth >= 0 ? 'text-emerald-500' : 'text-red-500';
-        return `<span class="${color}">${sign}${growth.toFixed(1)}% crescimento médio mensal</span>`;
-      }
-
-      document.getElementById('kpi-bruto').innerText = fmtBRL(bruto);
-      document.getElementById('kpi-bruto-pct').innerHTML = brutoArrAligned.length > 1 ? formatGrowthText(brutoGrowth) : '—';
-
-      document.getElementById('kpi-liquido').innerText = fmtBRL(liquido);
-      document.getElementById('kpi-liquido-pct').innerHTML = liquidoArrAligned.length > 1 ? formatGrowthText(liquidoGrowth) : '—';
-
-      document.getElementById('kpi-bon').innerText = fmtBRL(bon);
-      document.getElementById('kpi-bon-pct').innerHTML = bonArrAligned.length > 1 ? formatGrowthText(bonGrowth) : '—';
-
-      document.getElementById('kpi-dev').innerText = fmtBRL(dev);
-      document.getElementById('kpi-dev-pct').innerHTML = devArrAligned.length > 1 ? formatGrowthText(devGrowth) : '—';
-
-      document.getElementById('kpi-notas').innerText = Math.round(avgNotas).toLocaleString();
-      document.getElementById('kpi-clientes').innerText = Math.round(avgClientes).toLocaleString();
-      document.getElementById('kpi-notas-pct').innerHTML = notasArr.length > 1 ? formatGrowthText(notasGrowth) : '—';
-      document.getElementById('kpi-clientes-pct').innerHTML = clientesArr.length > 1 ? formatGrowthText(clientesGrowth) : '—';
+      document.getElementById('kpi-bruto').innerText = fmtBRL(brutoArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-bruto-pct').innerHTML = formatG(calcGrowthRate(brutoArr));
+      document.getElementById('kpi-liquido').innerText = fmtBRL(liqArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-liquido-pct').innerHTML = formatG(calcGrowthRate(liqArr));
+      document.getElementById('kpi-bon').innerText = fmtBRL(bonArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-bon-pct').innerHTML = formatG(calcGrowthRate(bonArr));
+      document.getElementById('kpi-dev').innerText = fmtBRL(devArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-dev-pct').innerHTML = formatG(calcGrowthRate(devArr));
+      document.getElementById('kpi-notas').innerText = Math.round(nArr.reduce((a,b)=>a+b,0)/(nArr.length||1)).toLocaleString();
+      document.getElementById('kpi-notas-pct').innerHTML = formatG(calcGrowthRate(nArr));
+      document.getElementById('kpi-clientes').innerText = Math.round(cArr.reduce((a,b)=>a+b,0)/(cArr.length||1)).toLocaleString();
+      document.getElementById('kpi-clientes-pct').innerHTML = formatG(calcGrowthRate(cArr));
     }
 
     function renderMainChart(data) {
       const ctx = document.getElementById('mainChart').getContext('2d');
       if (charts.main) charts.main.destroy();
 
-      const aggregated = {};
+      const agg = {};
       data.forEach(r => {
-        const key = isQuarterView ? `${r.id_ano} Q${Math.ceil(r.mesNum/4)}` : `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
-        aggregated[key] = (aggregated[key] || 0) + r.valor;
+        if (r.id_grupo === 'Vendas') {
+          const k = isQuarterView ? `${r.id_ano} Q${Math.ceil(r.mesNum/4)}` : `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
+          agg[k] = (agg[k]||0) + r.valor;
+        }
       });
-
-      const labels = Object.keys(aggregated).sort();
-      const values = labels.map(l => aggregated[l]);
-
-      // Growth labels: first label empty
-      const growth = values.map((v, i) => {
-        if (i === 0) return '';
-        const prev = values[i-1];
-        if (prev === 0) return '';
-        const pct = ((v / prev) - 1) * 100;
-        return (pct >= 0 ? '+' : '') + pct.toFixed(1) + '%';
-      });
+      const labels = Object.keys(agg).sort();
+      const dataset = labels.map(l=>agg[l]);
 
       charts.main = new Chart(ctx, {
         type: isQuarterView ? 'bar' : 'line',
         data: {
-          labels: labels.map(l => l.includes('-') ? l.split('-')[1]+'/'+l.split('-')[0] : l),
-          datasets: [{
-            label: 'Faturamento',
-            data: values,
-            backgroundColor: '#004a99',
-            borderColor: '#004a99',
-            tension: 0.3,
-            fill: !isQuarterView
-          }]
+          labels: labels.map(l=>l.includes('-')?l.split('-')[1]+'/'+l.split('-')[0]:l),
+          datasets: [{ data: dataset, borderColor: '#004a99', backgroundColor: '#004a99', fill: !isQuarterView, tension: 0.3, pointRadius: 4, pointHoverRadius: 6 }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: { display: false },
-            datalabels: {
-              display: isQuarterView,
-              anchor: 'end',
-              align: 'top',
-              formatter: (v, c) => growth[c.dataIndex] || '',
-              font: { weight: 'bold', size: 11 },
-              color: '#111'
-            }
+            datalabels: { display: false },
+            tooltip: { enabled: true, callbacks: { label: ctx => fmtBRL(ctx.raw) } }
           },
-          scales: { y: { beginAtZero: true, ticks: { callback: v => 'R$ ' + v.toLocaleString() } } }
+          scales: {
+            y: { ticks: { callback: function(val) { try { return Number(val).toLocaleString('pt-BR'); } catch(e){ return val; } } } }
+          },
+          datasets: { bar: { categoryPercentage: 0.6, barPercentage: 0.7 } }
         }
       });
     }
 
-    function renderGroupChart(data) {
-      const ctx = document.getElementById('groupChart').getContext('2d');
-      if (charts.group) charts.group.destroy();
-
-      const map = {};
-      data.forEach(r => map[r.id_operação] = (map[r.id_operação] || 0) + r.valor);
-
-      const labels = Object.keys(map);
-      const values = Object.values(map);
-      const colors = labels.map((_,i) => ['#004a99','#3b82f6','#93c5fd','#cbd5e1','#1e293b','#60a5fa','#bfdbfe'][i % 7]);
-
-      charts.group = new Chart(ctx, {
-        type: 'doughnut',
-        data: { labels: labels, datasets: [{ data: values, backgroundColor: colors }] },
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: {
-            legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } },
-            datalabels: {
-              color: '#fff',
-              formatter: (value, ctx) => {
-                const data = ctx.chart.data.datasets[0].data;
-                const total = data.reduce((a,b) => a + b, 0) || 1;
-                return (value / total * 100).toFixed(1) + '%';
-              },
-              font: { weight: 'bold', size: 11 }
-            }
-          }
-        },
-        plugins: [ChartDataLabels]
-      });
-    }
-
-    /* ---------- RENDER TABLE + CLICK HANDLER (ATUALIZADO) ---------- */
-    function renderTable(data) {
+    function renderBestWorstCharts(data) {
       const map = {};
       data.forEach(r => {
-        if (!map[r.id_rota]) map[r.id_rota] = { val: 0, n: 0, c: 0 };
-        // Cálculo do faturamento líquido para a tabela
-        const g = (r.id_grupo || '').toString().toLowerCase();
-        const valor = r.valor || 0;
-        if (g.includes('venda')) map[r.id_rota].val += valor;
-        else if (g.includes('dev') || g.includes('bonif')) map[r.id_rota].val -= valor;
-        
-        map[r.id_rota].n += r.notas;
-        map[r.id_rota].c += r.clientes;
+        const ym = `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
+        const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
+        map[ym] = (map[ym] || 0) + v;
+      });
+      const entries = Object.entries(map).map(([k,v])=>[k,v]).sort((a,b)=>b[1]-a[1]);
+      const top = entries.slice(0,5), bot = entries.slice(-5).reverse();
+
+      if (charts.best) charts.best.destroy();
+      charts.best = new Chart(document.getElementById('bestMonthsChart'), {
+        type: 'bar',
+        data: { labels: top.map(e=>e[0].split('-')[1]+'/'+e[0].split('-')[0]), datasets: [{ data: top.map(e=>e[1]), backgroundColor: '#0b6efd' }] },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{display:false}, datalabels:{display:false}, tooltip:{enabled:true, callbacks:{label:ctx=>fmtBRL(ctx.raw)}}},
+          scales: { y: { ticks: { callback: v => Number(v).toLocaleString('pt-BR') } } }
+        }
       });
 
-      const html = Object.entries(map)
-        .sort((a,b) => b[1].val - a[1].val)
-        .map(([name, d]) => {
-          return `<tr>
-            <td class="font-bold">${name}</td>
-            <td>${fmtBRL(d.val)}</td>
-            <td>${Math.round(d.n).toLocaleString()}</td>
-            <td>${Math.round(d.c).toLocaleString()}</td>
-            <td style="text-align:right;"><button class="btn-rota" data-rota="${encodeURIComponent(name)}">Abrir</button></td>
-          </tr>`;
-        })
-        .join('');
+      if (charts.worst) charts.worst.destroy();
+      charts.worst = new Chart(document.getElementById('worstMonthsChart'), {
+        type: 'bar',
+        data: { labels: bot.map(e=>e[0].split('-')[1]+'/'+e[0].split('-')[0]), datasets: [{ data: bot.map(e=>e[1]), backgroundColor: '#ef4444' }] },
+        options: {
+          responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{display:false}, datalabels:{display:false}, tooltip:{enabled:true, callbacks:{label:ctx=>fmtBRL(ctx.raw)}}},
+          scales: { y: { ticks: { callback: v => Number(v).toLocaleString('pt-BR') } } }
+        }
+      });
+    }
+
+    function renderTable(data) {
+      const map = {};
+      data.forEach(r=>{
+        const rt = r.id_rota || 'Sem Rota';
+        if (!map[rt]) map[rt] = { v:0, n:0, c:0, rows:[] };
+        const v = (r.id_grupo==='Vendas' ? r.valor : (r.id_grupo==='Dev. Vendas' || r.id_grupo==='Bonificação' ? -r.valor : 0));
+        map[rt].v += v; map[rt].n += r.notas; map[rt].c += r.clientes; map[rt].rows.push(r);
+      });
+
+      const html = Object.entries(map).sort((a,b)=>b[1].v - a[1].v).map(([n,d])=>`
+        <tr>
+          <td class="font-bold">${n}</td>
+          <td>${fmtBRL(d.v)}</td>
+          <td>${Math.round(d.n).toLocaleString()}</td>
+          <td>${Math.round(d.c).toLocaleString()}</td>
+          <td style="text-align:right">
+            <button class="btn-rota open-rota" data-rota="${encodeURIComponent(n)}">Abrir</button>
+            <button class="btn-export export-rota" data-rota="${encodeURIComponent(n)}">Exportar</button>
+          </td>
+        </tr>`).join('');
       document.getElementById('routes-body').innerHTML = html;
 
-      // Evento de clique no botão Abrir
-      document.querySelectorAll('.btn-rota').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          selectedRoute = decodeURIComponent(e.currentTarget.dataset.rota);
-          
-          // 1. Destaque visual na tabela
-          document.querySelectorAll('#routes-body tr').forEach(tr => tr.style.background = '');
-          e.currentTarget.closest('tr').style.background = '#e0f2fe'; // Azul claro de seleção
+      document.querySelectorAll('.open-rota').forEach(btn=>{
+        btn.onclick = (e)=>{
+          try {
+            const tr = e.target.closest('tr');
+            if (!tr) return;
+            const name = decodeURIComponent(e.target.dataset.rota);
+            if (openSummaryRow && openSummaryRow.previousSibling === tr) { openSummaryRow.remove(); openSummaryRow = null; selectedRoute = null; return; }
+            if (openSummaryRow) openSummaryRow.remove();
+            selectedRoute = name;
+            const rows = rawData.filter(r => r.id_rota === name);
+            const bruto = rows.filter(r=>r.id_grupo==='Vendas').reduce((s,r)=>s+r.valor,0);
+            const dev = rows.filter(r=>r.id_grupo==='Dev. Vendas').reduce((s,r)=>s+r.valor,0);
+            const bon = rows.filter(r=>r.id_grupo==='Bonificação').reduce((s,r)=>s+r.valor,0);
+            const liq = bruto - (dev + bon);
+            const totalNotas = rows.reduce((s,r)=>s+(r.notas||0),0);
+            const totalClientes = rows.reduce((s,r)=>s+(r.clientes||0),0);
 
-          // 2. Filtrar dados apenas desta rota para o resumo
-          const routeData = rawData.filter(r => r.id_rota === selectedRoute);
-          
-          const fatBruto = routeData.filter(r => (r.id_grupo||'').toLowerCase().includes('venda')).reduce((s,r)=>s+r.valor,0);
-          const devolucoes = routeData.filter(r => (r.id_grupo||'').toLowerCase().includes('dev')).reduce((s,r)=>s+r.valor,0);
-          const bonificacoes = routeData.filter(r => (r.id_grupo||'').toLowerCase().includes('bonif')).reduce((s,r)=>s+r.valor,0);
-          const fatLiquido = fatBruto - devolucoes - bonificacoes;
-          
-          const totalNotas = routeData.reduce((s,r) => s + (r.notas || 0), 0);
-          const totalClientes = routeData.reduce((s,r) => s + (r.clientes || 0), 0);
+            const cityMap = {};
+            rows.forEach(r=>{ const c = r.id_cidade || 'Sem Cidade'; cityMap[c] = (cityMap[c]||0) + (r.id_grupo==='Vendas'?r.valor:(r.id_grupo==='Dev. Vendas'||r.id_grupo==='Bonificação'?-r.valor:0)); });
 
-          // 3. Atualizar o Painel de Resumo
-          const summaryContainer = document.getElementById('route-summary-container');
-          summaryContainer.innerHTML = `
-            <div style="background:#fff; border:2px solid #004a99; border-radius:12px; padding:20px; margin-top:20px; box-shadow:0 4px 15px rgba(0,0,0,0.1)">
-              <h3 style="color:#004a99; font-weight:800; font-size:18px; margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px">
-                📊 Detalhes da Rota: ${selectedRoute}
-              </h3>
-              <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:15px">
-                <div>
-                  <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase">Faturamento Líquido</span>
-                  <div style="font-size:18px; font-weight:800; color:#1e293b">${fmtBRL(fatLiquido)}</div>
+            const citiesHtml = Object.entries(cityMap).sort((a,b)=>b[1]-a[1]).map(c=>`<div class="city-line"><span>${c[0]}</span><b>${fmtBRL(c[1])}</b></div>`).join('');
+
+            const summary = document.createElement('tr');
+            summary.className = 'route-summary-row';
+            summary.innerHTML = `<td colspan="5">
+              <div style="font-weight:800; color:#004a99; margin-bottom:10px">Detalhes da Rota: ${name}</div>
+              <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:10px">
+                <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0">
+                  <div style="font-size:10px; color:#64748b; font-weight:700">FATURAMENTO LÍQUIDO</div>
+                  <div style="font-size:16px; font-weight:800">${fmtBRL(liq)}</div>
+                  <div style="font-size:10px; color:#94a3b8">Bruto ${fmtBRL(bruto)} · Dev ${fmtBRL(dev)} · Bon ${fmtBRL(bon)}</div>
                 </div>
-                <div>
-                  <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase">Total de Notas</span>
-                  <div style="font-size:18px; font-weight:800; color:#1e293b">${totalNotas.toLocaleString()}</div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0">
+                  <div style="font-size:10px; color:#64748b; font-weight:700">TOTAL NOTAS</div>
+                  <div style="font-size:16px; font-weight:800">${Math.round(totalNotas).toLocaleString()}</div>
                 </div>
-                <div>
-                  <span style="font-size:11px; color:#64748b; font-weight:700; text-transform:uppercase">Total de Clientes</span>
-                  <div style="font-size:18px; font-weight:800; color:#1e293b">${totalClientes.toLocaleString()}</div>
+                <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0">
+                  <div style="font-size:10px; color:#64748b; font-weight:700">TOTAL CLIENTES</div>
+                  <div style="font-size:16px; font-weight:800">${Math.round(totalClientes).toLocaleString()}</div>
                 </div>
               </div>
-              <div style="margin-top:15px; font-size:12px; color:#64748b">
-                Bruto: ${fmtBRL(fatBruto)} | Dev: ${fmtBRL(devolucoes)} | Bonif: ${fmtBRL(bonificacoes)}
-              </div>
-            </div>
-          `;
+              <div style="font-weight:700; margin-bottom:6px">Faturamento por cidade (líquido)</div>
+              <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:8px; max-height:220px; overflow:auto">${citiesHtml}</div>
+            </td>`;
+            tr.parentNode.insertBefore(summary, tr.nextSibling);
+            openSummaryRow = summary;
+            summary.scrollIntoView({behavior:'smooth', block:'center'});
+          } catch (err) {
+            console.error('Erro ao abrir resumo de rota:', err);
+          }
+        };
+      });
 
-          // 4. Mostrar Cidades automaticamente
-          const cities = [...new Set(routeData.map(r => r.id_cidade))].filter(Boolean).sort();
-          const citiesDiv = document.getElementById('cities-of-route');
-          const ul = document.getElementById('cities-list');
-          
-          ul.innerHTML = cities.map(c => `<li>${c}</li>`).join('') || '<li>Sem cidades listadas</li>';
-          citiesDiv.style.display = 'block';
-          
-          // Scroll suave para o resumo
-          summaryContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
+      document.querySelectorAll('.export-rota').forEach(btn => {
+        btn.onclick = (e) => {
+          const name = decodeURIComponent(e.target.dataset.rota);
+          exportRoute(encodeURIComponent(name));
+        };
       });
     }
 
+    window.exportRoute = (nEncoded) => {
+      const name = decodeURIComponent(nEncoded);
+      const rows = rawData.filter(r => r.id_rota === name);
+      if (!rows.length) { alert('Nenhum dado para exportar para a rota: ' + name); return; }
+      const headers = ['Ano','Mes','Cidade','Rota','Operação','Grupo','Valor','Notas','Clientes'];
+      const csvRows = [headers.join(';')];
+      rows.forEach(r => {
+        csvRows.push([
+          r.id_ano,
+          r.id_mes,
+          r.id_cidade,
+          r.id_rota,
+          r.id_operação,
+          r.id_grupo,
+          r.valor.toFixed(2).replace('.',','),
+          r.notas,
+          r.clientes
+        ].join(';'));
+      });
+      const csvString = '\uFEFF' + csvRows.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', `relatorio_rota_${name.replace(/\s+/g,'_')}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    };
+
+    // ---------- Navigation ----------
     function setupNav() {
-      document.getElementById('link-dashboard').onclick = () => {
-        document.getElementById('dashboard-view').style.display = 'grid';
-        document.getElementById('main-charts').style.display = 'grid';
-        document.getElementById('routes-view').style.display = 'none';
-        document.getElementById('link-dashboard').classList.add('active');
-        document.getElementById('link-rotas').classList.remove('active');
+      const show = id => {
+        document.getElementById('dashboard-view').style.display = id === 'dashboard' ? '' : 'none';
+        document.getElementById('routes-view').style.display = id === 'routes' ? '' : 'none';
+        document.getElementById('insights-view').style.display = id === 'insights' ? '' : 'none';
       };
+      document.getElementById('link-dashboard').onclick = () => { show('dashboard'); document.getElementById('link-dashboard').classList.add('active'); document.getElementById('link-rotas').classList.remove('active'); document.getElementById('link-insights').classList.remove('active'); };
+      document.getElementById('link-rotas').onclick = () => { show('routes'); document.getElementById('link-rotas').classList.add('active'); document.getElementById('link-dashboard').classList.remove('active'); document.getElementById('link-insights').classList.remove('active'); };
+      document.getElementById('link-insights').onclick = () => { show('insights'); document.getElementById('link-insights').classList.add('active'); document.getElementById('link-rotas').classList.remove('active'); document.getElementById('link-dashboard').classList.remove('active'); };
+      document.getElementById('btn-toggle-view').onclick = (e) => { isQuarterView = !isQuarterView; e.target.innerText = isQuarterView ? 'Mostrar Mensal' : 'Mostrar Quadrimestre'; updateDashboard(true); };
+    }
 
-      document.getElementById('link-rotas').onclick = () => {
-        document.getElementById('dashboard-view').style.display = 'none';
-        document.getElementById('main-charts').style.display = 'none';
-        document.getElementById('routes-view').style.display = 'block';
-        document.getElementById('link-rotas').classList.add('active');
-        document.getElementById('link-dashboard').classList.remove('active');
-      };
+    // ---------- Suggestions generator (same as before) ----------
+    function generateSuggestionsForFiltered(filtered) {
+      if (!filtered || !filtered.length) return { immediate: ['Sem dados para gerar sugestões. Ajuste os filtros.'], short: [], medium: [], notes: ['Sem dados.'], summaryPeriods:[], topRoutes:[], worstRoutes:[], topProducts:[] };
 
-      document.getElementById('btn-toggle-view').onclick = (e) => {
-        isQuarterView = !isQuarterView;
-        e.target.innerText = isQuarterView ? 'Mostrar Mensal' : 'Mostrar Quadrimestre';
-        updateDashboard();
+      const monthAgg = {};
+      filtered.forEach(r => {
+        const key = `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
+        if (!monthAgg[key]) monthAgg[key] = { bruto:0, dev:0, bon:0, notas:0, clientes:0, rows:[] };
+        if (r.id_grupo === 'Vendas') monthAgg[key].bruto += r.valor;
+        else if (r.id_grupo === 'Dev. Vendas') monthAgg[key].dev += r.valor;
+        else if (r.id_grupo === 'Bonificação') monthAgg[key].bon += r.valor;
+        monthAgg[key].notas += r.notas || 0;
+        monthAgg[key].clientes += r.clientes || 0;
+        monthAgg[key].rows.push(r);
+      });
+      const periods = Object.keys(monthAgg).sort();
+      const summary = periods.map(p => {
+        const o = monthAgg[p];
+        return { periodo:p, bruto:o.bruto, dev:o.dev, bon:o.bon, liquido:o.bruto-(o.dev+o.bon), notas:o.notas, clientes:o.clientes, rows:o.rows };
+      });
+
+      const routeImpact = {};
+      filtered.forEach(r => {
+        const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
+        const rt = r.id_rota || 'Sem Rota';
+        routeImpact[rt] = (routeImpact[rt]||0) + v;
+      });
+      const topRoutes = Object.entries(routeImpact).sort((a,b)=>b[1]-a[1]);
+      const worstRoutes = Object.entries(routeImpact).sort((a,b)=>a[1]-b[1]);
+
+      const prodKeys = ['PRODUTO','produto','PRODUTO_DESCR','PROD','Produto'];
+      const prodImpact = {};
+      filtered.forEach(r=>{
+        let sku = null;
+        for (const k of prodKeys) {
+          if (r[k]) { sku = String(r[k]).trim(); break; }
+        }
+        if (!sku) return;
+        const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
+        prodImpact[sku] = (prodImpact[sku]||0) + v;
+      });
+      const topProducts = Object.entries(prodImpact).sort((a,b)=>b[1]-a[1]);
+
+      const drivers = { notesDrop:false, devIncrease:false, bonIncrease:false, avgDevShare:0, avgBonShare:0 };
+      if (summary.length >= 2) {
+        const first = summary[0], last = summary[summary.length-1];
+        drivers.notesDrop = last.notas < first.notas;
+        drivers.devIncrease = last.dev > first.dev;
+        drivers.bonIncrease = last.bon > first.bon;
+        drivers.avgDevShare = summary.reduce((s,x)=>s + (x.bruto ? x.dev / x.bruto : 0), 0) / Math.max(1, summary.length);
+        drivers.avgBonShare = summary.reduce((s,x)=>s + (x.bruto ? x.bon / x.bruto : 0), 0) / Math.max(1, summary.length);
+      }
+
+      const immediate = [];
+      const shortTerm = [];
+      const mediumTerm = [];
+      const notes = [];
+
+      if (drivers.notesDrop) {
+        immediate.push('Contactar clientes com maior queda de pedidos (listar top clientes afetados) e priorizar reativação/recuperação.');
+        notes.push('Detectada redução no número de notas.');
+      }
+      if (drivers.devIncrease) {
+        immediate.push('Investigar devoluções: gerar lista dos SKUs com maior devolução e abrir ação com Qualidade/Logística.');
+        notes.push('Aumento de devoluções detectado.');
+      }
+      if (drivers.bonIncrease) {
+        immediate.push('Rever e pausar bonificações/campanhas de baixo ROI imediatamente.');
+        notes.push('Bonificações estão mais altas no período recente.');
+      }
+
+      immediate.push('Verificar disponibilidade de estoque e status de entregas/atrasos nas últimas 72 horas.');
+      immediate.push('Priorizar entregas pendentes para rotas com maior impacto negativo.');
+
+      if (worstRoutes && worstRoutes.length) {
+        const worstTop = worstRoutes.slice(0,3).map(w => `${w[0]} (${fmtBRL(w[1])})`);
+        shortTerm.push(`Analisar detalhadamente as rotas com pior desempenho: ${worstTop.join(', ')} — checar entregas, clientes e problemas locais.`);
+      }
+      if (topProducts && topProducts.length) {
+        const topProdHighDev = topProducts.slice(0,3).map(p => `${p[0]} (${fmtBRL(p[1])})`);
+        shortTerm.push(`Rever SKUs com maior impacto de receita: ${topProdHighDev.join(', ')} — avaliar mix, qualidade e promoções.`);
+      }
+
+      if (drivers.avgDevShare > 0.05) mediumTerm.push('Criar programa de redução de devoluções: root-cause analysis por SKU e rota.');
+      if (drivers.avgBonShare > 0.03) mediumTerm.push('Revisar política comercial de bonificações e sua relação com margens líquidas.');
+
+      mediumTerm.push('Implementar painel de alertas automáticos (devoluções > X%, queda de faturamento > Y%) por rota/SKU.');
+      mediumTerm.push('Treinar equipes de vendas/atendimento em recuperação de clientes e upsell.');
+
+      const uniq = arr => [...new Set(arr)].slice(0,20);
+
+      return {
+        immediate: uniq(immediate),
+        short: uniq(shortTerm),
+        medium: uniq(mediumTerm),
+        notes: uniq(notes.length ? notes : ['Sem anomalias claras detectadas automaticamente.']),
+        topRoutes: topRoutes.slice(0,10),
+        worstRoutes: worstRoutes.slice(0,10),
+        topProducts: topProducts.slice(0,10),
+        summaryPeriods: summary
       };
     }
 
-    function setupRouteCityButton() {
-      document.getElementById('btn-show-cities').addEventListener('click', () => {
-        if (!selectedRoute) {
-          alert('Selecione uma rota na tabela clicando em "Abrir" ou filtre para uma rota antes.');
+    // ---------- Diagnosis UI actions ----------
+    function clearDiagnosis() {
+      const diagBox = document.getElementById('auto-diagnosis');
+      const notes = document.getElementById('auto-notes');
+      if (diagBox) diagBox.innerHTML = '<i>Pressione "Gerar diagnóstico" para começar.</i>';
+      if (notes) notes.innerHTML = '<li>Sem anotações automáticas.</li>';
+      const sugg = document.getElementById('suggestions-card');
+      if (sugg) sugg.style.display = 'none';
+      console.log('[IA] diagnóstico limpo pelo usuário');
+    }
+
+    async function runAutoDiagnosis() {
+      const btn = document.getElementById('btn-run-diagnosis');
+      const diagBox = document.getElementById('auto-diagnosis');
+      if (!btn || !diagBox) return;
+      btn.disabled = true;
+      const originalText = btn.innerText;
+      btn.innerText = 'Gerando ...';
+      diagBox.innerHTML = '<i>Gerando diagnóstico com os filtros selecionados...</i>';
+
+      try {
+        const filtered = getFilteredData();
+        if (!filtered.length) {
+          diagBox.innerHTML = '<b>Sem dados no período filtrado.</b>';
+          document.getElementById('auto-notes').innerHTML = '<li>Sem anotações automáticas.</li>';
           return;
         }
-        // Reuse the table click behaviour: build cities from selectedRoute
-        const routeData = rawData.filter(r => r.id_rota === selectedRoute);
-        const cities = [...new Set(routeData.map(r => r.id_cidade))].filter(Boolean).sort();
-        const ul = document.getElementById('cities-list');
-        ul.innerHTML = cities.map(c => `<li>${c}</li>`).join('') || '<li>Sem cidades listadas</li>';
-        document.getElementById('cities-of-route').style.display = 'block';
-        document.getElementById('cities-of-route').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+        const generated = generateSuggestionsForFiltered(filtered);
+        const summaryParts = [];
+
+        if (generated.summaryPeriods.length >= 1) {
+          const first = generated.summaryPeriods[0];
+          const last = generated.summaryPeriods[generated.summaryPeriods.length - 1];
+          const pct = ((last.liquido - first.liquido) / Math.max(1, Math.abs(first.liquido))) * 100;
+          summaryParts.push(`<b>Variação (primeiro vs último):</b> ${fmtBRL(first.liquido)} → ${fmtBRL(last.liquido)} (${pct>=0?'+':''}${pct.toFixed(1)}%)`);
+        } else {
+          summaryParts.push('<b>Sem períodos para sumarizar.</b>');
+        }
+
+        if (generated.topRoutes && generated.topRoutes.length) {
+          const top = generated.topRoutes.slice(0,5).map(r => `${r[0]}: ${fmtBRL(r[1])}`).join('<br>');
+          summaryParts.push(`<b>Top rotas (impacto):</b><br>${top}`);
+        }
+        if (generated.worstRoutes && generated.worstRoutes.length) {
+          const worst = generated.worstRoutes.slice(0,5).map(r => `${r[0]}: ${fmtBRL(r[1])}`).join('<br>');
+          summaryParts.push(`<b>Rotas com pior performance:</b><br>${worst}`);
+        }
+        if (generated.topProducts && generated.topProducts.length) {
+          const prods = generated.topProducts.slice(0,5).map(p => `${p[0]}: ${fmtBRL(p[1])}`).join('<br>');
+          summaryParts.push(`<b>Top produtos:</b><br>${prods}`);
+        }
+
+        const topImmediate = generated.immediate.slice(0,5).map(i => `<li>${i}</li>`).join('');
+        const topShort = generated.short.slice(0,5).map(i => `<li>${i}</li>`).join('');
+        const topMedium = generated.medium.slice(0,5).map(i => `<li>${i}</li>`).join('');
+
+        const htmlParts = [];
+        htmlParts.push('<div style="font-weight:800; margin-bottom:8px">Resumo & Principais Drivers</div>');
+        htmlParts.push('<div style="margin-bottom:8px">' + summaryParts.join('<br>') + '</div>');
+        htmlParts.push('<div style="font-weight:800; margin-top:10px">Ações recomendadas — IMEDIATAS (0-7 dias)</div>');
+        htmlParts.push(`<ul style="padding-left:18px; margin-top:6px">${topImmediate}</ul>`);
+        if (topShort) { htmlParts.push('<div style="font-weight:800; margin-top:10px">Ações — CURTO PRAZO (7-30 dias)</div>'); htmlParts.push(`<ul style="padding-left:18px; margin-top:6px">${topShort}</ul>`); }
+        if (topMedium) { htmlParts.push('<div style="font-weight:800; margin-top:10px">Ações — MÉDIO PRAZO (30-90 dias)</div>'); htmlParts.push(`<ul style="padding-left:18px; margin-top:6px">${topMedium}</ul>`); }
+
+        htmlParts.push('<div style="font-weight:800; margin-top:10px">KPIs sugeridos</div>');
+        htmlParts.push('<ul style="padding-left:18px; margin-top:6px"><li>Receita diária por rota</li><li>Taxa de devolução por SKU</li><li>Bonificação por campanha</li><li>Ticket médio por cliente</li><li>Número de notas por dia</li></ul>');
+
+        diagBox.innerHTML = htmlParts.join('');
+        document.getElementById('auto-notes').innerHTML = generated.notes.map(n=>`<li>${n}</li>`).join('');
+
+        if (document.getElementById('suggestions-card').style.display === 'block') {
+          populateSuggestionsCardWithGenerated(generated);
+        }
+      } catch (err) {
+        console.error('Erro em runAutoDiagnosis:', err);
+        document.getElementById('auto-diagnosis').innerHTML = `<b>Erro ao gerar diagnóstico:</b> ${escapeHtml(err.message || String(err))}`;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = originalText || 'Gerar diagnóstico';
+      }
+    }
+
+    function populateSuggestionsCardWithGenerated(generated) {
+      if (!generated) {
+        document.getElementById('suggestions-content').innerHTML = '<b>Sem dados para gerar sugestões.</b>';
+        return;
+      }
+      const lines = [];
+      lines.push('<div style="margin-bottom:8px"><b>Resumo rápido</b></div>');
+      if (generated.summaryPeriods.length >= 1) {
+        const first = generated.summaryPeriods[0], last = generated.summaryPeriods[generated.summaryPeriods.length-1];
+        lines.push(`<div style="font-size:13px; margin-bottom:8px">${first.periodo} → ${last.periodo}: ${fmtBRL(first.liquido)} → ${fmtBRL(last.liquido)}</div>`);
+      }
+
+      if (generated.immediate && generated.immediate.length) {
+        lines.push('<div style="font-weight:700; margin-top:6px">IMEDIATAS (0-7 dias)</div>');
+        lines.push('<ul style="padding-left:18px; margin-top:6px">' + generated.immediate.map(i=>`<li>${i}</li>`).join('') + '</ul>');
+      }
+      if (generated.short && generated.short.length) {
+        lines.push('<div style="font-weight:700; margin-top:10px">CURTO PRAZO (7-30 dias)</div>');
+        lines.push('<ul style="padding-left:18px; margin-top:6px">' + generated.short.map(i=>`<li>${i}</li>`).join('') + '</ul>');
+      }
+      if (generated.medium && generated.medium.length) {
+        lines.push('<div style="font-weight:700; margin-top:10px">MÉDIO PRAZO (30-90 dias)</div>');
+        lines.push('<ul style="padding-left:18px; margin-top:6px">' + generated.medium.map(i=>`<li>${i}</li>`).join('') + '</ul>');
+      }
+
+      if (generated.worstRoutes && generated.worstRoutes.length) {
+        const listWorst = generated.worstRoutes.slice(0,5).map(r => `${r[0]} (${fmtBRL(r[1])})`).join(', ');
+        lines.push(`<div style="font-weight:700; margin-top:10px">Rotas a priorizar</div><div style="margin-top:6px">${listWorst}</div>`);
+      }
+      if (generated.topProducts && generated.topProducts.length) {
+        const listProd = generated.topProducts.slice(0,5).map(p => `${p[0]} (${fmtBRL(p[1])})`).join(', ');
+        lines.push(`<div style="font-weight:700; margin-top:10px">Produtos a revisar</div><div style="margin-top:6px">${listProd}</div>`);
+      }
+
+      document.getElementById('suggestions-content').innerHTML = lines.join('');
+    }
+
+    function showSuggestionsCard() {
+      const filtered = getFilteredData();
+      const card = document.getElementById('suggestions-card');
+      if (!filtered.length) {
+        document.getElementById('suggestions-content').innerHTML = '<b>Sem dados no período filtrado.</b>';
+        card.style.display = 'block';
+        card.scrollIntoView({behavior:'smooth', block:'center'});
+        return;
+      }
+      const generated = generateSuggestionsForFiltered(filtered);
+      populateSuggestionsCardWithGenerated(generated);
+      card.style.display = 'block';
+      card.scrollIntoView({behavior:'smooth', block:'center'});
+    }
+
+    function hideSuggestionsCard() {
+      document.getElementById('suggestions-card').style.display = 'none';
+    }
+
+    function setupInsights() {
+      const btnDiag = document.getElementById('btn-run-diagnosis');
+      if (btnDiag) btnDiag.onclick = runAutoDiagnosis;
+      const btnClear = document.getElementById('btn-clear-diagnosis');
+      if (btnClear) btnClear.onclick = clearDiagnosis;
+      const btnSug = document.getElementById('btn-suggestions');
+      if (btnSug) btnSug.onclick = showSuggestionsCard;
+      const btnCloseSug = document.getElementById('close-suggestions');
+      if (btnCloseSug) btnCloseSug.onclick = hideSuggestionsCard;
+      const btnAsk = document.getElementById('btn-ask');
+      if (btnAsk) btnAsk.onclick = handleAIAsk;
+      const btnClearAI = document.getElementById('btn-clear-ai');
+      if (btnClearAI) btnClearAI.onclick = () => { document.getElementById('ai-question').value = ''; document.getElementById('ai-response').innerHTML = ''; };
+    }
+
+    // ---------- Utils for AI timeout & fetch ----------
+    function fetchWithTimeout(url, options = {}, timeout = AI_TIMEOUT_MS) {
+      return new Promise((resolve, reject) => {
+        const controller = new AbortController();
+        const id = setTimeout(() => {
+          controller.abort();
+          reject(new Error('timeout'));
+        }, timeout);
+        fetch(url, {...options, signal: controller.signal})
+          .then(res => {
+            clearTimeout(id);
+            resolve(res);
+          })
+          .catch(err => {
+            clearTimeout(id);
+            reject(err);
+          });
       });
+    }
+
+    function escapeHtml(text) {
+      return String(text || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    // ---------- AI Ask (external with timeout -> fallback local) ----------
+    async function handleAIAsk() {
+      const qRaw = (document.getElementById('ai-question').value || '').trim();
+      const out = document.getElementById('ai-response');
+      const btn = document.getElementById('btn-ask');
+      if (!qRaw) { out.innerHTML = '<i>Digite uma pergunta.</i>'; return; }
+
+      // quick parse: if user specified two periods like "jan 2025 e jun 2025", handle directly with compare routine
+      const re = /\b(jan(?:eiro)?|fev(?:ereiro)?|mar(?:ço|co)?|abr(?:il)?|mai(?:o)?|jun(?:ho)?|jul(?:ho)?|ago(?:sto)?|set(?:embro)?|out(?:ubro)?|nov(?:embro)?|dez(?:embro)?)[\s,]*(?:de)?[\s]*(\d{4})/gi;
+      const matches = [...qRaw.matchAll(re)];
+      if (matches.length >= 2) {
+        const a = matches[0], b = matches[1];
+        const norm = s => {
+          const sNorm = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+          for (const k of Object.keys(monthMap)) {
+            if (k.normalize('NFD').replace(/[\u0300-\u036f]/g, '').startsWith(sNorm.slice(0,3))) return monthMap[k];
+          }
+          return 1;
+        };
+        const mes1 = norm(a[1]), ano1 = a[2];
+        const mes2 = norm(b[1]), ano2 = b[2];
+        answerComparePeriods({mes:mes1, ano: ano1}, {mes:mes2, ano: ano2});
+        return;
+      }
+
+      // Show loading state
+      out.innerHTML = '<i>IA: pesquisando e respondendo...</i>';
+      btn.disabled = true;
+
+      // Prepare payload (send filters to external IA if present)
+      const payload = { question: qRaw, filters: getFiltersFromChoices() };
+
+      // Try external AI first with timeout
+      const externalUrl = 'http://localhost:3000/ask'; // <-- ajuste aqui se seu proxy/servidor estiver em outra URL/porta
+      try {
+        const res = await fetchWithTimeout(externalUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        }, AI_TIMEOUT_MS);
+
+        if (!res.ok) throw new Error('IA externa retornou erro: ' + res.status);
+        const json = await res.json();
+        if (json && json.answer) {
+          out.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(json.answer)}</div>`;
+          btn.disabled = false;
+          return;
+        } else {
+          // If response doesn't have answer, fallback
+          console.warn('IA externa respondeu sem "answer", fazendo fallback local.');
+        }
+      } catch (err) {
+        // Expected: timeout or connection refused -> fallback to local
+        console.warn('IA externa indisponível ou timeout:', err && err.message ? err.message : err);
+      }
+
+      // Fallback imediato: IA local (mais robusta)
+      try {
+        const filtered = getFilteredData();
+        if (!filtered.length) {
+          out.innerHTML = '<i>Sem dados no período/seleção atual. Ajuste os filtros e tente novamente.</i>';
+          btn.disabled = false;
+          return;
+        }
+
+        // Build a more complete local response by combining multiple analyses
+        const generated = generateSuggestionsForFiltered(filtered);
+        const periodAgg = {};
+        filtered.forEach(r => {
+          const key = `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
+          if (!periodAgg[key]) periodAgg[key] = { bruto:0, dev:0, bon:0, notas:0, clientes:0 };
+          if (r.id_grupo === 'Vendas') periodAgg[key].bruto += r.valor;
+          else if (r.id_grupo === 'Dev. Vendas') periodAgg[key].dev += r.valor;
+          else if (r.id_grupo === 'Bonificação') periodAgg[key].bon += r.valor;
+          periodAgg[key].notas += r.notas || 0;
+          periodAgg[key].clientes += r.clientes || 0;
+        });
+        const periods = Object.keys(periodAgg).sort();
+        const recentPeriods = periods.slice(-6);
+
+        // Top routes
+        const routeMap = {};
+        filtered.forEach(r => {
+          const rt = r.id_rota || 'Sem Rota';
+          const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
+          routeMap[rt] = (routeMap[rt] || 0) + v;
+        });
+        const topRoutes = Object.entries(routeMap).sort((a,b)=>b[1]-a[1]).slice(0,7);
+
+        // Top products (best and worst by net)
+        const prodMap = {};
+        const prodKeys = ['PRODUTO','produto','PRODUTO_DESCR','PROD','Produto'];
+        filtered.forEach(r=>{
+          let sku = null;
+          for (const k of prodKeys) {
+            if (r[k]) { sku = String(r[k]).trim(); break; }
+          }
+          if (!sku) return;
+          const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
+          prodMap[sku] = (prodMap[sku]||0) + v;
+        });
+        const topProducts = Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,7);
+
+        // Compose answer: summary, drivers, top routes/products, action plan, KPIs to monitor
+        const lines = [];
+        lines.push(`Resposta automática (IA local) — pergunta: "${qRaw}"`);
+        lines.push('');
+        lines.push('Resumo rápido do período filtrado:');
+        if (recentPeriods.length) {
+          recentPeriods.forEach(p => {
+            const o = periodAgg[p];
+            const liquido = Math.round((o.bruto - (o.dev + o.bon)) || 0);
+            lines.push(`- ${p}: bruto=${fmtBRL(o.bruto)} · dev=${fmtBRL(o.dev)} · bon=${fmtBRL(o.bon)} · líquido=${fmtBRL(liquido)} · notas=${o.notas} · clientes=${o.clientes}`);
+          });
+        } else {
+          lines.push('- Sem períodos suficientes para sumarizar.');
+        }
+
+        lines.push('');
+        // Drivers detectados (use generated)
+        if (generated.summaryPeriods.length >= 1) {
+          lines.push('Principais drivers identificados:');
+          if (generated.notes && generated.notes.length) {
+            generated.notes.forEach(n => lines.push(`- ${n}`));
+          } else {
+            lines.push('- Nenhum driver automático detectado claramente.');
+          }
+        }
+
+        lines.push('');
+        // Top routes
+        if (topRoutes.length) {
+          lines.push('Top rotas (impacto no faturamento líquido):');
+          topRoutes.forEach((r,i) => lines.push(`${i+1}. ${r[0]} — ${fmtBRL(r[1])}`));
+        }
+
+        lines.push('');
+        if (topProducts.length) {
+          lines.push('Produtos principais (por impacto líquido):');
+          topProducts.forEach((p,i) => lines.push(`${i+1}. ${p[0]} — ${fmtBRL(p[1])}`));
+        }
+
+        lines.push('');
+        lines.push('Ações recomendadas (prioridade):');
+        if (generated.immediate && generated.immediate.length) {
+          lines.push('IMEDIATAS (0-7 dias):');
+          generated.immediate.forEach(i => lines.push(`- ${i}`));
+        }
+        if (generated.short && generated.short.length) {
+          lines.push('CURTO PRAZO (7-30 dias):');
+          generated.short.forEach(i => lines.push(`- ${i}`));
+        }
+        if (generated.medium && generated.medium.length) {
+          lines.push('MÉDIO PRAZO (30-90 dias):');
+          generated.medium.forEach(i => lines.push(`- ${i}`));
+        }
+
+        lines.push('');
+        lines.push('KPIs a acompanhar imediatamente: receita por rota (diária), devolução por SKU (%), bonificação por campanha, ticket médio, nº de notas/dia.');
+        lines.push('');
+        lines.push('Observação: para análises muito robustas e explicações geradas por LLM (texto longo com contexto adicional) conecte um servidor de IA (ex.: Ollama/LM Studio/OAPI) e atualize a variável externalUrl no código.');
+
+        out.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(lines.join('\n'))}</div>`;
+      } catch (err) {
+        console.error('Erro na IA local fallback:', err);
+        out.innerHTML = `<i>Erro ao gerar resposta local: ${escapeHtml(err.message || String(err))}</i>`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // ---------- Compare routine (same as earlier) ----------
+    function answerComparePeriods(p1, p2) {
+      const filtered = getFilteredData();
+
+      const rows1 = filtered.filter(r => String(r.id_ano) === String(p1.ano) && Number(r.mesNum) === Number(p1.mes));
+      const rows2 = filtered.filter(r => String(r.id_ano) === String(p2.ano) && Number(r.mesNum) === Number(p2.mes));
+
+      if (!rows1.length && !rows2.length) {
+        document.getElementById('ai-response').innerHTML = `<b>Sem dados para os períodos solicitados (com os filtros aplicados).</b>`;
+        return;
+      }
+
+      const agg = (rows) => {
+        const obj = { bruto:0, dev:0, bon:0, notas:0, clientes:0 };
+        rows.forEach(r=>{
+          if (r.id_grupo === 'Vendas') obj.bruto += r.valor;
+          else if (r.id_grupo === 'Dev. Vendas') obj.dev += r.valor;
+          else if (r.id_grupo === 'Bonificação') obj.bon += r.valor;
+          obj.notas += (r.notas||0);
+          obj.clientes += (r.clientes||0);
+        });
+        obj.liquido = obj.bruto - (obj.dev + obj.bon);
+        obj.ticket = obj.notas ? obj.bruto / obj.notas : 0;
+        return obj;
+      };
+
+      const a1 = agg(rows1);
+      const a2 = agg(rows2);
+
+      let html = `<div style="font-weight:700; margin-bottom:8px">Comparação: ${String(p1.mes).padStart(2,'0')}/${p1.ano} vs ${String(p2.mes).padStart(2,'0')}/${p2.ano}</div>`;
+      const varPct = (x,y) => y === 0 ? '—' : `${(((x - y) / Math.abs(y)) * 100).toFixed(1)}%`;
+      html += `<div><b>Faturamento Líquido:</b> ${fmtBRL(a1.liquido)} vs ${fmtBRL(a2.liquido)} → var: ${varPct(a1.liquido, a2.liquido)} (${a1.liquido >= a2.liquido ? 'maior' : 'menor'})</div>`;
+      html += `<div style="margin-top:6px"><b>Drivers:</b></div>`;
+      html += `<ul style="padding-left:18px; line-height:1.4; margin-top:6px">`;
+      html += `<li>Notas: ${a1.notas} vs ${a2.notas} → ${a1.notas < a2.notas ? 'menos notas' : a1.notas > a2.notas ? 'mais notas' : 'mesmo número de notas'}</li>`;
+      html += `<li>Clientes: ${a1.clientes} vs ${a2.clientes} → ${a1.clientes < a2.clientes ? 'menos clientes' : a1.clientes > a2.clientes ? 'mais clientes' : 'mesmo número de clientes'}</li>`;
+      html += `<li>Devoluções (R$): ${fmtBRL(a1.dev)} vs ${fmtBRL(a2.dev)} ${a1.dev > a2.dev ? '→ aumentaram' : a1.dev < a2.dev ? '→ reduziram' : ''}</li>`;
+      html += `<li>Bonificações (R$): ${fmtBRL(a1.bon)} vs ${fmtBRL(a2.bon)} ${a1.bon > a2.bon ? '→ aumentaram' : a1.bon < a2.bon ? '→ reduziram' : ''}</li>`;
+      html += `<li>Ticket médio (bruto): ${a1.ticket ? 'R$ '+a1.ticket.toFixed(2).replace('.',',') : '—'} vs ${a2.ticket ? 'R$ '+a2.ticket.toFixed(2).replace('.',',') : '—'} ${ (a1.ticket && a2.ticket) ? (a1.ticket > a2.ticket ? '→ ticket maior' : a1.ticket < a2.ticket ? '→ ticket menor' : '') : ''}</li>`;
+      html += `</ul><div style="margin-top:8px"><b>Possíveis causas e recomendações:</b></div><ul style="padding-left:18px;line-height:1.4;margin-top:6px">`;
+
+      if (a1.liquido < a2.liquido) {
+        if (a1.notas < a2.notas) html += `<li>Redução no número de notas pode indicar perda de pedidos ou clientes — verificar clientes inativos e rotas com queda.</li>`;
+        if (a1.ticket < a2.ticket) html += `<li>Redução no ticket médio sugere mudança no mix de produtos ou menos vendas de grandes pedidos — analisar SKUs e contas-chave.</li>`;
+        if (a1.dev > a2.dev) html += `<li>Aumento de devoluções impactou o líquido — investigar motivos (qualidade, logística, divergência fiscal).</li>`;
+        if (a1.bon > a2.bon) html += `<li>Bonificações maiores reduziram o líquido — revisar política promo/canal para o período.</li>`;
+        if (!(a1.notas < a2.notas || a1.ticket < a2.ticket || a1.dev > a2.dev || a1.bon > a2.bon)) {
+          html += `<li>Diferença observada, mas sem driver claro nos dados filtrados — sugerimos análise por rota/produto para encontrar responsáveis.</li>`;
+        }
+      } else {
+        html += `<li>O período final (${String(p1.mes).padStart(2,'0')}/${p1.ano}) apresentou desempenho >= período inicial (${String(p2.mes).padStart(2,'0')}/${p2.ano}). Verificar ações realizadas (promoções, logística, grandes clientes) para replicar estratégias.</li>`;
+      }
+      html += `</ul>`;
+
+      document.getElementById('ai-response').innerHTML = html;
+    }
+
+    // ---------- Mobile adjustments ----------
+    function setupMobile() {
+      const mq = window.matchMedia('(max-width:1000px)');
+      const mobileTopbar = document.getElementById('mobileTopbar');
+      function refresh() {
+        if (mq.matches) {
+          mobileTopbar.style.display = 'flex';
+          document.getElementById('sidebar').classList.add('closed');
+        } else {
+          mobileTopbar.style.display = 'none';
+          document.getElementById('sidebar').classList.remove('closed');
+          overlay.classList.remove('show');
+        }
+      }
+      mq.addEventListener('change', refresh);
+      refresh();
     }
 
     window.onload = init;
