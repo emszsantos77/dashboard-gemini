@@ -16,7 +16,6 @@
     :root{ --sidebar-w:260px; --bg:#f1f5f9; --jbs-blue:#004a99; --card-border:#e6eef6; }
     html,body{height:100%; margin:0; font-family:'Inter',sans-serif; background:var(--bg); color:#0f172a;}
 
-    /* SIDEBAR */
     .sidebar{position:fixed; left:0; top:0; bottom:0; width:var(--sidebar-w); background:linear-gradient(180deg,#063a80 0%, #063a80 100%); color:white; padding:28px 20px; z-index:60; display:flex; flex-direction:column; gap:18px; transition:transform .18s ease}
     .sidebar.closed{transform:translateX(-110%);}
     .logo img{height:44px}
@@ -24,7 +23,6 @@
     .nav a.active{background:rgba(255,255,255,0.15); box-shadow: inset 0 0 10px rgba(0,0,0,0.1);}
     .sidebar-close { display:none; position:absolute; right:12px; top:12px; background:transparent; border:none; color:white; font-size:18px; cursor:pointer; }
 
-    /* MAIN */
     .main{margin-left:var(--sidebar-w); padding:28px; min-height:100vh; box-sizing:border-box}
     .container{max-width:1200px; margin:0 auto}
 
@@ -38,7 +36,8 @@
     .choices__inner { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; min-height: 42px !important; padding: 4px !important; }
     .choices__list--multiple .choices__item { background-color: #004a99 !important; border: none !important; border-radius: 4px !important; font-weight: 600 !important; }
 
-    .kpi-row{display:grid; grid-template-columns:repeat(5,1fr); gap:15px; margin-bottom:25px}
+    /* ← 6 colunas para incluir Descontos */
+    .kpi-row{display:grid; grid-template-columns:repeat(6,1fr); gap:15px; margin-bottom:25px}
     .card{background:white; border-radius:10px; padding:14px 16px 10px 16px; border:1px solid var(--card-border); box-shadow:0 2px 8px rgba(0,0,0,0.02); display:flex; flex-direction:column; justify-content:space-between;}
     .card .title{font-size:10px; color:#64748b; font-weight:700; text-transform:uppercase; line-height:1; margin-bottom:4px;}
     .card .value{font-size:17px; font-weight:800; color: #1e293b; line-height:1.1;}
@@ -51,7 +50,6 @@
     .side-charts{display:flex; gap:18px; align-items:stretch}
     .side-charts .chart-half{flex:1; min-width:0; height:260px; max-height:260px}
 
-    /* New: wrapper to control canvas height and allow horizontal scroll */
     .chart-wrap { width:100%; height:350px; max-height:350px; min-height:220px; overflow-x:auto; overflow-y:hidden; display:block; }
     .chart-wrap canvas { display:block; width:100% !important; height:100% !important; }
 
@@ -67,22 +65,22 @@
     .route-summary-row td{background:#f8fafc; padding:18px; border-bottom:1px solid #e6eef6}
     .city-line{display:flex; justify-content:space-between; padding:6px; border-bottom:1px dashed #e2e8f0}
 
-    /* Insights view */
     .insights-grid{display:grid; grid-template-columns:2fr 1fr; gap:18px}
     .insight-card{background:white; padding:16px; border-radius:10px; border:1px solid #e6eef6}
     .insight-title{font-weight:800; margin-bottom:10px; color:#0f172a}
 
     #suggestions-card{display:none; margin-top:12px}
 
-    /* overlay for mobile sidebar */
     .overlay { position:fixed; left:0; top:0; right:0; bottom:0; background: rgba(0,0,0,0.35); z-index:50; display:none; }
     .overlay.show { display:block; }
 
-    /* MOBILE ADAPTIVE */
     .mobile-topbar { display:none; position:fixed; left:0; right:0; top:0; height:56px; background:rgba(255,255,255,0.95); z-index:58; display:flex; align-items:center; gap:12px; padding:0 12px; box-shadow:0 2px 6px rgba(0,0,0,0.05)}
     .mobile-topbar .hamburger { width:40px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#fff; border:1px solid #e2e8f0; cursor:pointer; }
     .mobile-spacer { height:56px; }
 
+    @media (max-width:1200px){
+      .kpi-row{grid-template-columns:repeat(3,1fr)}
+    }
     @media (max-width:1000px){
       .kpi-row{grid-template-columns:repeat(2,1fr)}
       .side-charts{flex-direction:column}
@@ -98,7 +96,6 @@
       .chart-wrap { height:260px; max-height:260px; min-height:200px; }
       .side-charts .chart-half{height:200px; max-height:200px}
     }
-
     @media (max-width:480px){
       .kpi-row{grid-template-columns:repeat(1,1fr)}
       .filter-group{min-width:100%; flex-basis:100%}
@@ -110,13 +107,11 @@
   </style>
 </head>
 <body>
-  <!-- overlay to close sidebar on mobile -->
   <div id="overlay" class="overlay" aria-hidden="true"></div>
 
-  <!-- Mobile topbar -->
   <div class="mobile-topbar" id="mobileTopbar" style="display:none;">
     <div class="hamburger" id="btnToggleSidebar" aria-label="Abrir menu">
-      <svg width="18" height="14" viewBox="0 0 18 14" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="2" rx="1" fill="#004a99"/><rect y="6" width="18" height="2" rx="1" fill="#004a99"/><rect y="12" width="18" height="2" rx="1" fill="#004a99"/></svg>
+      <svg width="18" height="14" viewBox="0 0 18 14" fill="none"><rect width="18" height="2" rx="1" fill="#004a99"/><rect y="6" width="18" height="2" rx="1" fill="#004a99"/><rect y="12" width="18" height="2" rx="1" fill="#004a99"/></svg>
     </div>
     <div style="font-weight:700;color:#0f172a">JBS FRIOS</div>
   </div>
@@ -141,7 +136,6 @@
         <p class="page-sub">Análise consolidada de faturamento e logística</p>
       </div>
 
-      <!-- FILTERS -->
       <div class="filter-bar" id="filterBar">
         <div class="filter-group"><label>Ano</label><select id="filter-year" multiple></select></div>
         <div class="filter-group"><label>Mês</label><select id="filter-month" multiple>
@@ -155,13 +149,14 @@
         <div class="filter-group"><label>Operação</label><select id="filter-operation" multiple></select></div>
       </div>
 
-      <!-- DASHBOARD VIEW -->
       <div id="dashboard-view">
         <div class="kpi-row">
           <div class="card"><div><div class="title">Faturamento Bruto</div><div class="value" id="kpi-bruto">R$ 0,00</div></div><div class="meta" id="kpi-bruto-pct">—</div></div>
           <div class="card"><div><div class="title">Faturamento Líquido</div><div class="value" id="kpi-liquido">R$ 0,00</div></div><div class="meta" id="kpi-liquido-pct">—</div></div>
           <div class="card"><div><div class="title">Bonificações</div><div class="value" id="kpi-bon">R$ 0,00</div></div><div class="meta" id="kpi-bon-pct">—</div></div>
           <div class="card"><div><div class="title">Devoluções</div><div class="value" id="kpi-dev">R$ 0,00</div></div><div class="meta" id="kpi-dev-pct">—</div></div>
+          <!-- NOVO: card Descontos -->
+          <div class="card"><div><div class="title">Descontos</div><div class="value" id="kpi-desc">R$ 0,00</div></div><div class="meta" id="kpi-desc-pct">—</div></div>
           <div class="card">
             <div><div class="title">Atendimento</div>
             <div style="display:flex; gap:12px; margin-top:4px">
@@ -190,7 +185,6 @@
         </div>
       </div>
 
-      <!-- ROUTES VIEW -->
       <div id="routes-view" style="display:none" class="chart-card">
         <div class="chart-title">Relatório Detalhado por Rota</div>
         <div style="overflow-x:auto;"><table id="routes-table">
@@ -199,7 +193,6 @@
         </table></div>
       </div>
 
-      <!-- INSIGHTS VIEW -->
       <div id="insights-view" style="display:none" class="chart-card">
         <div class="chart-title">Insights sobre o negócio</div>
         <div class="insights-grid">
@@ -213,7 +206,6 @@
                 <button id="btn-clear-diagnosis" class="btn-export">Limpar diagnóstico</button>
                 <button id="btn-suggestions" class="btn-export">Sugestões de ação</button>
               </div>
-
               <div id="suggestions-card" class="insight-card" style="display:none">
                 <div style="font-weight:800; margin-bottom:8px">Sugestões de Ação (dinâmicas)</div>
                 <div id="suggestions-content" style="line-height:1.4"></div>
@@ -222,17 +214,15 @@
                 </div>
               </div>
             </div>
-
             <div class="insight-card" style="margin-top:12px">
               <div class="insight-title">Observações automatizadas</div>
               <ul id="auto-notes" style="margin:0; padding-left:18px; color:#0f172a"><li>Sem anotações automáticas.</li></ul>
             </div>
           </div>
-
           <aside>
             <div class="insight-card">
               <div class="insight-title">Pergunte ao Assistente (IA local)</div>
-              <div style="font-size:13px; color:#475569; margin-bottom:8px">Ex.: "por que meu faturamento em jan de 2025 foi menor do que jun de 2025" ou "quais ações imediatas para evitar queda"</div>
+              <div style="font-size:13px; color:#475569; margin-bottom:8px">Ex.: "por que meu faturamento em jan de 2025 foi menor do que jun de 2025"</div>
               <textarea id="ai-question" rows="4" style="width:100%; padding:10px; border-radius:8px; border:1px solid #e6eef6"></textarea>
               <div style="display:flex; gap:8px; margin-top:8px">
                 <button id="btn-ask" class="btn-rota">Perguntar</button>
@@ -248,10 +238,8 @@
   </main>
 
   <script>
-    // --- CONFIG: timeout for external AI (ms) ---
-    const AI_TIMEOUT_MS = 2000; // 2 seconds
+    const AI_TIMEOUT_MS = 2000;
 
-    // Register plugin and disable datalabels globally so values only show in tooltip on hover
     Chart.register(ChartDataLabels);
     Chart.defaults.plugins.datalabels = { display: false };
 
@@ -266,49 +254,56 @@
     let selectedRoute = null;
     let openSummaryRow = null;
 
-    // ---------- UI: sidebar & overlay ----------
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
+    // ── Helpers de classificação (baseados APENAS em id_grupo) ──────────────
+    function isGrupoVendas(r)      { return String(r.id_grupo||'').trim() === 'Vendas'; }
+    function isGrupoDev(r)         { const g = String(r.id_grupo||'').trim(); return g === 'Dev. Vendas' || g.toLowerCase().includes('devolu'); }
+    function isGrupoBon(r)         { return String(r.id_grupo||'').trim().toLowerCase().includes('bonifica'); }
+    function isGrupoDesconto(r)    {
+      const g = String(r.id_grupo||'').trim().toLowerCase();
+      const op = String(r.id_operação||'').trim().toLowerCase();
+      return g.includes('desconto') || op.includes('desconto');
+    }
+
+    // Valor líquido de uma linha: vendas = positivo, redutoras = negativo
+    function valorLiq(r) {
+      if (isGrupoVendas(r))   return  r.valor;
+      if (isGrupoDev(r))      return -r.valor;
+      if (isGrupoBon(r))      return -r.valor;
+      if (isGrupoDesconto(r)) return -r.valor;
+      return 0;
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
+    const sidebar  = document.getElementById('sidebar');
+    const overlay  = document.getElementById('overlay');
     const btnToggleSidebar = document.getElementById('btnToggleSidebar');
-    const btnSidebarClose = document.getElementById('btnSidebarClose');
+    const btnSidebarClose  = document.getElementById('btnSidebarClose');
 
-    function openSidebar() {
-      sidebar.classList.remove('closed');
-      sidebar.classList.add('open');
-      overlay.classList.add('show');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeSidebar() {
-      sidebar.classList.remove('open');
-      sidebar.classList.add('closed');
-      overlay.classList.remove('show');
-      document.body.style.overflow = '';
-    }
+    function openSidebar()  { sidebar.classList.remove('closed'); sidebar.classList.add('open'); overlay.classList.add('show'); document.body.style.overflow='hidden'; }
+    function closeSidebar() { sidebar.classList.remove('open'); sidebar.classList.add('closed'); overlay.classList.remove('show'); document.body.style.overflow=''; }
 
-    if (btnToggleSidebar) btnToggleSidebar.onclick = (e)=>{ openSidebar(); };
-    if (btnSidebarClose) btnSidebarClose.onclick = (e)=>{ closeSidebar(); };
-    if (overlay) overlay.onclick = ()=>{ closeSidebar(); };
+    if (btnToggleSidebar) btnToggleSidebar.onclick = () => openSidebar();
+    if (btnSidebarClose)  btnSidebarClose.onclick  = () => closeSidebar();
+    if (overlay)          overlay.onclick           = () => closeSidebar();
 
-    document.querySelectorAll('.nav a').forEach(a=>{
-      a.addEventListener('click', () => {
-        if (window.matchMedia('(max-width:1000px)').matches) setTimeout(closeSidebar, 80);
-      });
+    document.querySelectorAll('.nav a').forEach(a => {
+      a.addEventListener('click', () => { if (window.matchMedia('(max-width:1000px)').matches) setTimeout(closeSidebar, 80); });
     });
 
-    // ---------- Data loading & helpers ----------
+    // ── Carregamento de dados ────────────────────────────────────────────────
     async function init() {
       try {
         try {
           const res = await fetch('./Uploads/Rota_Valor_clean.json');
           if (res.ok) rawData = await res.json();
-        } catch(e) { console.log('Sem arquivo de dados pre-carregado (ok).'); }
+        } catch(e) { console.log('Sem arquivo pré-carregado (ok).'); }
 
         rawData.forEach(r => {
-          r.valor = Number(String(r.id_valor || r.valor || 0).replace(/[^\d\-,.]/g,'').replace(',','.')) || 0;
-          r.notas = Number(r.id_quantidade_notas || r.notas || 0) || 0;
+          r.valor    = Number(String(r.id_valor || r.valor || 0).replace(/[^\d\-,.]/g,'').replace(',','.')) || 0;
+          r.notas    = Number(r.id_quantidade_notas    || r.notas    || 0) || 0;
           r.clientes = Number(r.id_quantidade_clientes || r.clientes || 0) || 0;
-          const mm = (r.id_mes || '').toString().toLowerCase();
-          r.mesNum = monthMap[mm] || (Number(mm) || 1);
+          const mm   = (r.id_mes || '').toString().toLowerCase();
+          r.mesNum   = monthMap[mm] || (Number(mm) || 1);
         });
 
         setupFilters();
@@ -316,63 +311,62 @@
         setupNav();
         setupInsights();
         setupMobile();
-      } catch (e) {
+      } catch(e) {
         console.error('Erro carregando dados:', e);
-        document.body.insertAdjacentHTML('afterbegin', `<div style="padding:16px;background:#ffeeee;color:#900;font-weight:700">Erro ao carregar dados: ${e.message}</div>`);
+        document.body.insertAdjacentHTML('afterbegin',`<div style="padding:16px;background:#ffeeee;color:#900;font-weight:700">Erro ao carregar dados: ${e.message}</div>`);
       }
     }
 
     function getFiltersFromChoices() {
       return {
-        years: (choices.year && choices.year.getValue ? choices.year.getValue(true) : []).map(String),
-        months: (choices.month && choices.month.getValue ? choices.month.getValue(true) : []).map(v => String(v).toLowerCase()),
-        cities: (choices.city && choices.city.getValue ? choices.city.getValue(true) : []),
+        years:  (choices.year  && choices.year.getValue  ? choices.year.getValue(true)  : []).map(String),
+        months: (choices.month && choices.month.getValue ? choices.month.getValue(true) : []).map(v=>String(v).toLowerCase()),
+        cities: (choices.city  && choices.city.getValue  ? choices.city.getValue(true)  : []),
         routes: (choices.route && choices.route.getValue ? choices.route.getValue(true) : []),
-        ops: (choices.op && choices.op.getValue ? choices.op.getValue(true) : [])
+        ops:    (choices.op    && choices.op.getValue    ? choices.op.getValue(true)    : [])
       };
     }
 
     function getFilteredData() {
-      const filters = getFiltersFromChoices();
+      const f = getFiltersFromChoices();
       return rawData.filter(r => {
-        if (filters.years.length && !filters.years.includes(String(r.id_ano))) return false;
-        if (filters.months.length && !filters.months.includes(String(r.id_mes).toLowerCase())) return false;
-        if (filters.cities.length && !filters.cities.includes(r.id_cidade)) return false;
-        if (filters.routes.length && !filters.routes.includes(r.id_rota)) return false;
-        if (filters.ops.length && !filters.ops.includes(r.id_operação)) return false;
+        if (f.years.length  && !f.years.includes(String(r.id_ano)))                    return false;
+        if (f.months.length && !f.months.includes(String(r.id_mes).toLowerCase()))     return false;
+        if (f.cities.length && !f.cities.includes(r.id_cidade))                        return false;
+        if (f.routes.length && !f.routes.includes(r.id_rota))                          return false;
+        if (f.ops.length    && !f.ops.includes(r.id_operação))                         return false;
         return true;
       });
     }
 
-    // ---------- Filters ----------
+    // ── Filtros ──────────────────────────────────────────────────────────────
     function setupFilters() {
-      const config = { removeItemButton: true, itemSelectText: '', shouldSort: false };
-      const years = [...new Set(rawData.map(r => String(r.id_ano)))].filter(Boolean).sort();
-      const cities = [...new Set(rawData.map(r => r.id_cidade))].filter(Boolean).sort();
-      const routes = [...new Set(rawData.map(r => r.id_rota))].filter(Boolean).sort();
-      const ops = [...new Set(rawData.map(r => r.id_operação))].filter(Boolean).sort();
+      const config = { removeItemButton:true, itemSelectText:'', shouldSort:false };
+      const years  = [...new Set(rawData.map(r=>String(r.id_ano)))].filter(Boolean).sort();
+      const cities = [...new Set(rawData.map(r=>r.id_cidade))].filter(Boolean).sort();
+      const routes = [...new Set(rawData.map(r=>r.id_rota))].filter(Boolean).sort();
+      const ops    = [...new Set(rawData.map(r=>r.id_operação))].filter(Boolean).sort();
 
-      choices.year = new Choices('#filter-year', config).setChoices(years.map(v=>({value:v,label:v})));
-      choices.month = new Choices('#filter-month', config);
-      choices.city = new Choices('#filter-city', config).setChoices(cities.map(v=>({value:v,label:v})));
-      choices.route = new Choices('#filter-route', config).setChoices(routes.map(v=>({value:v,label:v})));
-      choices.op = new Choices('#filter-operation', config).setChoices(ops.map(v=>({value:v,label:v})));
+      choices.year  = new Choices('#filter-year',      config).setChoices(years.map(v=>({value:v,label:v})));
+      choices.month = new Choices('#filter-month',     config);
+      choices.city  = new Choices('#filter-city',      config).setChoices(cities.map(v=>({value:v,label:v})));
+      choices.route = new Choices('#filter-route',     config).setChoices(routes.map(v=>({value:v,label:v})));
+      choices.op    = new Choices('#filter-operation', config).setChoices(ops.map(v=>({value:v,label:v})));
 
       Object.values(choices).forEach(c => {
-        try { c.passedElement.element.addEventListener('change', () => updateDashboard(true)); } catch(e){ }
+        try { c.passedElement.element.addEventListener('change', ()=>updateDashboard(true)); } catch(e){}
       });
     }
 
-    // ---------- Dashboard rendering (same as before) ----------
-    function updateDashboard(keepOpen = false) {
+    // ── Dashboard ────────────────────────────────────────────────────────────
+    function updateDashboard(keepOpen=false) {
       const filtered = getFilteredData();
       renderKPIs(filtered);
       renderMainChart(filtered);
       renderBestWorstCharts(filtered);
       renderTable(filtered);
-
       if (keepOpen && selectedRoute) {
-        setTimeout(() => {
+        setTimeout(()=>{
           const btn = document.querySelector(`.btn-rota[data-rota="${encodeURIComponent(selectedRoute)}"]`);
           if (btn) btn.click();
         }, 60);
@@ -381,125 +375,113 @@
 
     function calcGrowthRate(arr) {
       if (!arr || arr.length < 2) return 0;
-      let growthSum = 0, count = 0;
-      for (let i = 1; i < arr.length; i++) {
-        const prev = arr[i-1];
-        if (prev === 0) continue;
-        growthSum += (arr[i] - prev) / Math.abs(prev);
-        count++;
+      let sum=0, cnt=0;
+      for (let i=1;i<arr.length;i++) {
+        const prev=arr[i-1]; if (!prev) continue;
+        sum += (arr[i]-prev)/Math.abs(prev); cnt++;
       }
-      return count > 0 ? (growthSum / count) * 100 : 0;
+      return cnt ? (sum/cnt)*100 : 0;
     }
 
+    // ── KPIs ─────────────────────────────────────────────────────────────────
     function renderKPIs(data) {
-      const monthKeys = [...new Set(data.map(r => `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`))].sort();
-      const brutoArr = [], devArr = [], bonArr = [], liqArr = [], nArr = [], cArr = [];
+      const monthKeys = [...new Set(data.map(r=>`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`))].sort();
+      const brutoArr=[],devArr=[],bonArr=[],descArr=[],liqArr=[],nArr=[],cArr=[];
 
       monthKeys.forEach(mk => {
-        const b = data.filter(r => r.id_grupo === 'Vendas' && `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.valor,0);
-        const d = data.filter(r => r.id_grupo === 'Dev. Vendas' && `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.valor,0);
-        const bo = data.filter(r => r.id_grupo === 'Bonificação' && `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.valor,0);
-        brutoArr.push(b); devArr.push(d); bonArr.push(bo); liqArr.push(b - (d + bo));
-        nArr.push(data.filter(r => `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.notas,0));
-        cArr.push(data.filter(r => `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}` === mk).reduce((s,r)=>s+r.clientes,0));
+        const rows = data.filter(r=>`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`===mk);
+        const b  = rows.filter(isGrupoVendas).reduce((s,r)=>s+r.valor,0);
+        const d  = rows.filter(isGrupoDev).reduce((s,r)=>s+r.valor,0);
+        const bo = rows.filter(isGrupoBon).reduce((s,r)=>s+r.valor,0);
+        const de = rows.filter(isGrupoDesconto).reduce((s,r)=>s+r.valor,0);
+        brutoArr.push(b); devArr.push(d); bonArr.push(bo); descArr.push(de);
+        liqArr.push(b - d - bo - de);
+        nArr.push(rows.reduce((s,r)=>s+r.notas,0));
+        cArr.push(rows.reduce((s,r)=>s+r.clientes,0));
       });
 
-      const formatG = g => (isNaN(g) ? '—' : `<span style="color:${g>=0? '#16a34a' : '#ef4444'}">${g>=0?'+':''}${g.toFixed(1)}% crescimento médio mensal</span>`);
+      const formatG = g => isNaN(g) ? '—' : `<span style="color:${g>=0?'#16a34a':'#ef4444'}">${g>=0?'+':''}${g.toFixed(1)}% crescimento médio mensal</span>`;
 
-      document.getElementById('kpi-bruto').innerText = fmtBRL(brutoArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-bruto').innerText   = fmtBRL(brutoArr.reduce((a,b)=>a+b,0));
       document.getElementById('kpi-bruto-pct').innerHTML = formatG(calcGrowthRate(brutoArr));
-      document.getElementById('kpi-liquido').innerText = fmtBRL(liqArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-liquido').innerText  = fmtBRL(liqArr.reduce((a,b)=>a+b,0));
       document.getElementById('kpi-liquido-pct').innerHTML = formatG(calcGrowthRate(liqArr));
-      document.getElementById('kpi-bon').innerText = fmtBRL(bonArr.reduce((a,b)=>a+b,0));
-      document.getElementById('kpi-bon-pct').innerHTML = formatG(calcGrowthRate(bonArr));
-      document.getElementById('kpi-dev').innerText = fmtBRL(devArr.reduce((a,b)=>a+b,0));
-      document.getElementById('kpi-dev-pct').innerHTML = formatG(calcGrowthRate(devArr));
-      document.getElementById('kpi-notas').innerText = Math.round(nArr.reduce((a,b)=>a+b,0)/(nArr.length||1)).toLocaleString();
+      document.getElementById('kpi-bon').innerText      = fmtBRL(bonArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-bon-pct').innerHTML  = formatG(calcGrowthRate(bonArr));
+      document.getElementById('kpi-dev').innerText      = fmtBRL(devArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-dev-pct').innerHTML  = formatG(calcGrowthRate(devArr));
+      document.getElementById('kpi-desc').innerText     = fmtBRL(descArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-desc-pct').innerHTML = formatG(calcGrowthRate(descArr));
+      document.getElementById('kpi-notas').innerText    = Math.round(nArr.reduce((a,b)=>a+b,0)/(nArr.length||1)).toLocaleString();
       document.getElementById('kpi-notas-pct').innerHTML = formatG(calcGrowthRate(nArr));
       document.getElementById('kpi-clientes').innerText = Math.round(cArr.reduce((a,b)=>a+b,0)/(cArr.length||1)).toLocaleString();
       document.getElementById('kpi-clientes-pct').innerHTML = formatG(calcGrowthRate(cArr));
     }
 
+    // ── Gráfico principal ────────────────────────────────────────────────────
     function renderMainChart(data) {
       const ctx = document.getElementById('mainChart').getContext('2d');
       if (charts.main) charts.main.destroy();
-
       const agg = {};
       data.forEach(r => {
-        if (r.id_grupo === 'Vendas') {
+        if (isGrupoVendas(r)) {
           const k = isQuarterView ? `${r.id_ano} Q${Math.ceil(r.mesNum/4)}` : `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
           agg[k] = (agg[k]||0) + r.valor;
         }
       });
-      const labels = Object.keys(agg).sort();
+      const labels  = Object.keys(agg).sort();
       const dataset = labels.map(l=>agg[l]);
-
       charts.main = new Chart(ctx, {
         type: isQuarterView ? 'bar' : 'line',
         data: {
           labels: labels.map(l=>l.includes('-')?l.split('-')[1]+'/'+l.split('-')[0]:l),
-          datasets: [{ data: dataset, borderColor: '#004a99', backgroundColor: '#004a99', fill: !isQuarterView, tension: 0.3, pointRadius: 4, pointHoverRadius: 6 }]
+          datasets:[{ data:dataset, borderColor:'#004a99', backgroundColor:'#004a99', fill:!isQuarterView, tension:0.3, pointRadius:4, pointHoverRadius:6 }]
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: { display: false },
-            datalabels: { display: false },
-            tooltip: { enabled: true, callbacks: { label: ctx => fmtBRL(ctx.raw) } }
-          },
-          scales: {
-            y: { ticks: { callback: function(val) { try { return Number(val).toLocaleString('pt-BR'); } catch(e){ return val; } } } }
-          },
-          datasets: { bar: { categoryPercentage: 0.6, barPercentage: 0.7 } }
+        options:{
+          responsive:true, maintainAspectRatio:false,
+          interaction:{mode:'index',intersect:false},
+          plugins:{ legend:{display:false}, datalabels:{display:false}, tooltip:{enabled:true,callbacks:{label:ctx=>fmtBRL(ctx.raw)}} },
+          scales:{ y:{ticks:{callback:val=>{ try{return Number(val).toLocaleString('pt-BR');}catch(e){return val;} }}} },
+          datasets:{ bar:{categoryPercentage:0.6,barPercentage:0.7} }
         }
       });
     }
 
+    // ── Melhores / Piores períodos (usa valorLiq → inclui descontos) ─────────
     function renderBestWorstCharts(data) {
       const map = {};
       data.forEach(r => {
         const ym = `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
-        const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
-        map[ym] = (map[ym] || 0) + v;
+        map[ym] = (map[ym]||0) + valorLiq(r);
       });
-      const entries = Object.entries(map).map(([k,v])=>[k,v]).sort((a,b)=>b[1]-a[1]);
+      const entries = Object.entries(map).sort((a,b)=>b[1]-a[1]);
       const top = entries.slice(0,5), bot = entries.slice(-5).reverse();
 
-      if (charts.best) charts.best.destroy();
-      charts.best = new Chart(document.getElementById('bestMonthsChart'), {
-        type: 'bar',
-        data: { labels: top.map(e=>e[0].split('-')[1]+'/'+e[0].split('-')[0]), datasets: [{ data: top.map(e=>e[1]), backgroundColor: '#0b6efd' }] },
-        options: {
-          responsive:true, maintainAspectRatio:false,
-          plugins:{ legend:{display:false}, datalabels:{display:false}, tooltip:{enabled:true, callbacks:{label:ctx=>fmtBRL(ctx.raw)}}},
-          scales: { y: { ticks: { callback: v => Number(v).toLocaleString('pt-BR') } } }
-        }
-      });
-
+      if (charts.best)  charts.best.destroy();
       if (charts.worst) charts.worst.destroy();
-      charts.worst = new Chart(document.getElementById('worstMonthsChart'), {
-        type: 'bar',
-        data: { labels: bot.map(e=>e[0].split('-')[1]+'/'+e[0].split('-')[0]), datasets: [{ data: bot.map(e=>e[1]), backgroundColor: '#ef4444' }] },
-        options: {
-          responsive:true, maintainAspectRatio:false,
-          plugins:{ legend:{display:false}, datalabels:{display:false}, tooltip:{enabled:true, callbacks:{label:ctx=>fmtBRL(ctx.raw)}}},
-          scales: { y: { ticks: { callback: v => Number(v).toLocaleString('pt-BR') } } }
-        }
+
+      charts.best = new Chart(document.getElementById('bestMonthsChart'),{
+        type:'bar',
+        data:{ labels:top.map(e=>e[0].split('-')[1]+'/'+e[0].split('-')[0]), datasets:[{data:top.map(e=>e[1]),backgroundColor:'#0b6efd'}] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:true,callbacks:{label:ctx=>fmtBRL(ctx.raw)}}}, scales:{y:{ticks:{callback:v=>Number(v).toLocaleString('pt-BR')}}} }
+      });
+      charts.worst = new Chart(document.getElementById('worstMonthsChart'),{
+        type:'bar',
+        data:{ labels:bot.map(e=>e[0].split('-')[1]+'/'+e[0].split('-')[0]), datasets:[{data:bot.map(e=>e[1]),backgroundColor:'#ef4444'}] },
+        options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},datalabels:{display:false},tooltip:{enabled:true,callbacks:{label:ctx=>fmtBRL(ctx.raw)}}}, scales:{y:{ticks:{callback:v=>Number(v).toLocaleString('pt-BR')}}} }
       });
     }
 
+    // ── Tabela de rotas (usa valorLiq → inclui descontos) ────────────────────
     function renderTable(data) {
       const map = {};
       data.forEach(r=>{
-        const rt = r.id_rota || 'Sem Rota';
-        if (!map[rt]) map[rt] = { v:0, n:0, c:0, rows:[] };
-        const v = (r.id_grupo==='Vendas' ? r.valor : (r.id_grupo==='Dev. Vendas' || r.id_grupo==='Bonificação' ? -r.valor : 0));
-        map[rt].v += v; map[rt].n += r.notas; map[rt].c += r.clientes; map[rt].rows.push(r);
+        const rt = r.id_rota||'Sem Rota';
+        if (!map[rt]) map[rt]={v:0,n:0,c:0,rows:[]};
+        map[rt].v += valorLiq(r);
+        map[rt].n += r.notas; map[rt].c += r.clientes; map[rt].rows.push(r);
       });
-
-      const html = Object.entries(map).sort((a,b)=>b[1].v - a[1].v).map(([n,d])=>`
+      const html = Object.entries(map).sort((a,b)=>b[1].v-a[1].v).map(([n,d])=>`
         <tr>
           <td class="font-bold">${n}</td>
           <td>${fmtBRL(d.v)}</td>
@@ -515,631 +497,330 @@
       document.querySelectorAll('.open-rota').forEach(btn=>{
         btn.onclick = (e)=>{
           try {
-            const tr = e.target.closest('tr');
+            const tr   = e.target.closest('tr');
             if (!tr) return;
             const name = decodeURIComponent(e.target.dataset.rota);
-            if (openSummaryRow && openSummaryRow.previousSibling === tr) { openSummaryRow.remove(); openSummaryRow = null; selectedRoute = null; return; }
+            if (openSummaryRow && openSummaryRow.previousSibling===tr){ openSummaryRow.remove(); openSummaryRow=null; selectedRoute=null; return; }
             if (openSummaryRow) openSummaryRow.remove();
             selectedRoute = name;
-            const rows = rawData.filter(r => r.id_rota === name);
-            const bruto = rows.filter(r=>r.id_grupo==='Vendas').reduce((s,r)=>s+r.valor,0);
-            const dev = rows.filter(r=>r.id_grupo==='Dev. Vendas').reduce((s,r)=>s+r.valor,0);
-            const bon = rows.filter(r=>r.id_grupo==='Bonificação').reduce((s,r)=>s+r.valor,0);
-            const liq = bruto - (dev + bon);
-            const totalNotas = rows.reduce((s,r)=>s+(r.notas||0),0);
+            const rows  = rawData.filter(r=>r.id_rota===name);
+            const bruto = rows.filter(isGrupoVendas).reduce((s,r)=>s+r.valor,0);
+            const dev   = rows.filter(isGrupoDev).reduce((s,r)=>s+r.valor,0);
+            const bon   = rows.filter(isGrupoBon).reduce((s,r)=>s+r.valor,0);
+            const desc  = rows.filter(isGrupoDesconto).reduce((s,r)=>s+r.valor,0);
+            const liq   = bruto - dev - bon - desc;
+            const totalNotas    = rows.reduce((s,r)=>s+(r.notas||0),0);
             const totalClientes = rows.reduce((s,r)=>s+(r.clientes||0),0);
 
             const cityMap = {};
-            rows.forEach(r=>{ const c = r.id_cidade || 'Sem Cidade'; cityMap[c] = (cityMap[c]||0) + (r.id_grupo==='Vendas'?r.valor:(r.id_grupo==='Dev. Vendas'||r.id_grupo==='Bonificação'?-r.valor:0)); });
-
+            rows.forEach(r=>{ const c=r.id_cidade||'Sem Cidade'; cityMap[c]=(cityMap[c]||0)+valorLiq(r); });
             const citiesHtml = Object.entries(cityMap).sort((a,b)=>b[1]-a[1]).map(c=>`<div class="city-line"><span>${c[0]}</span><b>${fmtBRL(c[1])}</b></div>`).join('');
 
             const summary = document.createElement('tr');
             summary.className = 'route-summary-row';
             summary.innerHTML = `<td colspan="5">
-              <div style="font-weight:800; color:#004a99; margin-bottom:10px">Detalhes da Rota: ${name}</div>
-              <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:10px">
-                <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0">
-                  <div style="font-size:10px; color:#64748b; font-weight:700">FATURAMENTO LÍQUIDO</div>
-                  <div style="font-size:16px; font-weight:800">${fmtBRL(liq)}</div>
-                  <div style="font-size:10px; color:#94a3b8">Bruto ${fmtBRL(bruto)} · Dev ${fmtBRL(dev)} · Bon ${fmtBRL(bon)}</div>
+              <div style="font-weight:800;color:#004a99;margin-bottom:10px">Detalhes da Rota: ${name}</div>
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
+                <div style="background:#fff;padding:10px;border-radius:8px;border:1px solid #e2e8f0">
+                  <div style="font-size:10px;color:#64748b;font-weight:700">FATURAMENTO LÍQUIDO</div>
+                  <div style="font-size:16px;font-weight:800">${fmtBRL(liq)}</div>
+                  <div style="font-size:10px;color:#94a3b8">Bruto ${fmtBRL(bruto)} · Dev ${fmtBRL(dev)} · Bon ${fmtBRL(bon)} · Desc ${fmtBRL(desc)}</div>
                 </div>
-                <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0">
-                  <div style="font-size:10px; color:#64748b; font-weight:700">TOTAL NOTAS</div>
-                  <div style="font-size:16px; font-weight:800">${Math.round(totalNotas).toLocaleString()}</div>
+                <div style="background:#fff;padding:10px;border-radius:8px;border:1px solid #e2e8f0">
+                  <div style="font-size:10px;color:#64748b;font-weight:700">TOTAL NOTAS</div>
+                  <div style="font-size:16px;font-weight:800">${Math.round(totalNotas).toLocaleString()}</div>
                 </div>
-                <div style="background:#fff; padding:10px; border-radius:8px; border:1px solid #e2e8f0">
-                  <div style="font-size:10px; color:#64748b; font-weight:700">TOTAL CLIENTES</div>
-                  <div style="font-size:16px; font-weight:800">${Math.round(totalClientes).toLocaleString()}</div>
+                <div style="background:#fff;padding:10px;border-radius:8px;border:1px solid #e2e8f0">
+                  <div style="font-size:10px;color:#64748b;font-weight:700">TOTAL CLIENTES</div>
+                  <div style="font-size:16px;font-weight:800">${Math.round(totalClientes).toLocaleString()}</div>
                 </div>
               </div>
-              <div style="font-weight:700; margin-bottom:6px">Faturamento por cidade (líquido)</div>
-              <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:8px; max-height:220px; overflow:auto">${citiesHtml}</div>
+              <div style="font-weight:700;margin-bottom:6px">Faturamento por cidade (líquido)</div>
+              <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px;max-height:220px;overflow:auto">${citiesHtml}</div>
             </td>`;
             tr.parentNode.insertBefore(summary, tr.nextSibling);
             openSummaryRow = summary;
-            summary.scrollIntoView({behavior:'smooth', block:'center'});
-          } catch (err) {
-            console.error('Erro ao abrir resumo de rota:', err);
-          }
+            summary.scrollIntoView({behavior:'smooth',block:'center'});
+          } catch(err){ console.error('Erro ao abrir resumo de rota:',err); }
         };
       });
 
-      document.querySelectorAll('.export-rota').forEach(btn => {
-        btn.onclick = (e) => {
-          const name = decodeURIComponent(e.target.dataset.rota);
-          exportRoute(encodeURIComponent(name));
-        };
+      document.querySelectorAll('.export-rota').forEach(btn=>{
+        btn.onclick = (e)=>{ const name=decodeURIComponent(e.target.dataset.rota); exportRoute(encodeURIComponent(name)); };
       });
     }
 
     window.exportRoute = (nEncoded) => {
       const name = decodeURIComponent(nEncoded);
-      const rows = rawData.filter(r => r.id_rota === name);
-      if (!rows.length) { alert('Nenhum dado para exportar para a rota: ' + name); return; }
+      const rows = rawData.filter(r=>r.id_rota===name);
+      if (!rows.length){ alert('Nenhum dado para exportar para a rota: '+name); return; }
       const headers = ['Ano','Mes','Cidade','Rota','Operação','Grupo','Valor','Notas','Clientes'];
       const csvRows = [headers.join(';')];
-      rows.forEach(r => {
-        csvRows.push([
-          r.id_ano,
-          r.id_mes,
-          r.id_cidade,
-          r.id_rota,
-          r.id_operação,
-          r.id_grupo,
-          r.valor.toFixed(2).replace('.',','),
-          r.notas,
-          r.clientes
-        ].join(';'));
-      });
-      const csvString = '\uFEFF' + csvRows.join('\n');
-      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      rows.forEach(r=>{ csvRows.push([r.id_ano,r.id_mes,r.id_cidade,r.id_rota,r.id_operação,r.id_grupo,r.valor.toFixed(2).replace('.',','),r.notas,r.clientes].join(';')); });
+      const blob = new Blob(['\uFEFF'+csvRows.join('\n')],{type:'text/csv;charset=utf-8;'});
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.setAttribute('download', `relatorio_rota_${name.replace(/\s+/g,'_')}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      link.setAttribute('download',`relatorio_rota_${name.replace(/\s+/g,'_')}.csv`);
+      document.body.appendChild(link); link.click(); link.remove();
     };
 
-    // ---------- Navigation ----------
+    // ── Navegação ────────────────────────────────────────────────────────────
     function setupNav() {
       const show = id => {
-        document.getElementById('dashboard-view').style.display = id === 'dashboard' ? '' : 'none';
-        document.getElementById('routes-view').style.display = id === 'routes' ? '' : 'none';
-        document.getElementById('insights-view').style.display = id === 'insights' ? '' : 'none';
+        document.getElementById('dashboard-view').style.display = id==='dashboard'?'':'none';
+        document.getElementById('routes-view').style.display    = id==='routes'?'':'none';
+        document.getElementById('insights-view').style.display  = id==='insights'?'':'none';
       };
-      document.getElementById('link-dashboard').onclick = () => { show('dashboard'); document.getElementById('link-dashboard').classList.add('active'); document.getElementById('link-rotas').classList.remove('active'); document.getElementById('link-insights').classList.remove('active'); };
-      document.getElementById('link-rotas').onclick = () => { show('routes'); document.getElementById('link-rotas').classList.add('active'); document.getElementById('link-dashboard').classList.remove('active'); document.getElementById('link-insights').classList.remove('active'); };
-      document.getElementById('link-insights').onclick = () => { show('insights'); document.getElementById('link-insights').classList.add('active'); document.getElementById('link-rotas').classList.remove('active'); document.getElementById('link-dashboard').classList.remove('active'); };
-      document.getElementById('btn-toggle-view').onclick = (e) => { isQuarterView = !isQuarterView; e.target.innerText = isQuarterView ? 'Mostrar Mensal' : 'Mostrar Quadrimestre'; updateDashboard(true); };
+      document.getElementById('link-dashboard').onclick = ()=>{ show('dashboard'); document.getElementById('link-dashboard').classList.add('active'); document.getElementById('link-rotas').classList.remove('active'); document.getElementById('link-insights').classList.remove('active'); };
+      document.getElementById('link-rotas').onclick     = ()=>{ show('routes');    document.getElementById('link-rotas').classList.add('active');    document.getElementById('link-dashboard').classList.remove('active'); document.getElementById('link-insights').classList.remove('active'); };
+      document.getElementById('link-insights').onclick  = ()=>{ show('insights');  document.getElementById('link-insights').classList.add('active');  document.getElementById('link-rotas').classList.remove('active');    document.getElementById('link-dashboard').classList.remove('active'); };
+      document.getElementById('btn-toggle-view').onclick = (e)=>{ isQuarterView=!isQuarterView; e.target.innerText=isQuarterView?'Mostrar Mensal':'Mostrar Quadrimestre'; updateDashboard(true); };
     }
 
-    // ---------- Suggestions generator (same as before) ----------
+    // ── Sugestões ────────────────────────────────────────────────────────────
     function generateSuggestionsForFiltered(filtered) {
-      if (!filtered || !filtered.length) return { immediate: ['Sem dados para gerar sugestões. Ajuste os filtros.'], short: [], medium: [], notes: ['Sem dados.'], summaryPeriods:[], topRoutes:[], worstRoutes:[], topProducts:[] };
+      if (!filtered||!filtered.length) return {immediate:['Sem dados.'],short:[],medium:[],notes:['Sem dados.'],summaryPeriods:[],topRoutes:[],worstRoutes:[],topProducts:[]};
 
-      const monthAgg = {};
-      filtered.forEach(r => {
-        const key = `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
-        if (!monthAgg[key]) monthAgg[key] = { bruto:0, dev:0, bon:0, notas:0, clientes:0, rows:[] };
-        if (r.id_grupo === 'Vendas') monthAgg[key].bruto += r.valor;
-        else if (r.id_grupo === 'Dev. Vendas') monthAgg[key].dev += r.valor;
-        else if (r.id_grupo === 'Bonificação') monthAgg[key].bon += r.valor;
-        monthAgg[key].notas += r.notas || 0;
-        monthAgg[key].clientes += r.clientes || 0;
+      const monthAgg={};
+      filtered.forEach(r=>{
+        const key=`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
+        if (!monthAgg[key]) monthAgg[key]={bruto:0,dev:0,bon:0,desc:0,notas:0,clientes:0,rows:[]};
+        if (isGrupoVendas(r))   monthAgg[key].bruto += r.valor;
+        if (isGrupoDev(r))      monthAgg[key].dev   += r.valor;
+        if (isGrupoBon(r))      monthAgg[key].bon   += r.valor;
+        if (isGrupoDesconto(r)) monthAgg[key].desc  += r.valor;
+        monthAgg[key].notas    += r.notas||0;
+        monthAgg[key].clientes += r.clientes||0;
         monthAgg[key].rows.push(r);
       });
       const periods = Object.keys(monthAgg).sort();
-      const summary = periods.map(p => {
-        const o = monthAgg[p];
-        return { periodo:p, bruto:o.bruto, dev:o.dev, bon:o.bon, liquido:o.bruto-(o.dev+o.bon), notas:o.notas, clientes:o.clientes, rows:o.rows };
-      });
+      const summary = periods.map(p=>{ const o=monthAgg[p]; return {periodo:p,bruto:o.bruto,dev:o.dev,bon:o.bon,desc:o.desc,liquido:o.bruto-o.dev-o.bon-o.desc,notas:o.notas,clientes:o.clientes,rows:o.rows}; });
 
-      const routeImpact = {};
-      filtered.forEach(r => {
-        const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
-        const rt = r.id_rota || 'Sem Rota';
-        routeImpact[rt] = (routeImpact[rt]||0) + v;
-      });
-      const topRoutes = Object.entries(routeImpact).sort((a,b)=>b[1]-a[1]);
+      const routeImpact={};
+      filtered.forEach(r=>{ const rt=r.id_rota||'Sem Rota'; routeImpact[rt]=(routeImpact[rt]||0)+valorLiq(r); });
+      const topRoutes   = Object.entries(routeImpact).sort((a,b)=>b[1]-a[1]);
       const worstRoutes = Object.entries(routeImpact).sort((a,b)=>a[1]-b[1]);
 
-      const prodKeys = ['PRODUTO','produto','PRODUTO_DESCR','PROD','Produto'];
-      const prodImpact = {};
-      filtered.forEach(r=>{
-        let sku = null;
-        for (const k of prodKeys) {
-          if (r[k]) { sku = String(r[k]).trim(); break; }
-        }
-        if (!sku) return;
-        const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
-        prodImpact[sku] = (prodImpact[sku]||0) + v;
-      });
+      const prodKeys=['PRODUTO','produto','PRODUTO_DESCR','PROD','Produto'];
+      const prodImpact={};
+      filtered.forEach(r=>{ let sku=null; for(const k of prodKeys){if(r[k]){sku=String(r[k]).trim();break;}} if(!sku)return; prodImpact[sku]=(prodImpact[sku]||0)+valorLiq(r); });
       const topProducts = Object.entries(prodImpact).sort((a,b)=>b[1]-a[1]);
 
-      const drivers = { notesDrop:false, devIncrease:false, bonIncrease:false, avgDevShare:0, avgBonShare:0 };
-      if (summary.length >= 2) {
-        const first = summary[0], last = summary[summary.length-1];
-        drivers.notesDrop = last.notas < first.notas;
-        drivers.devIncrease = last.dev > first.dev;
-        drivers.bonIncrease = last.bon > first.bon;
-        drivers.avgDevShare = summary.reduce((s,x)=>s + (x.bruto ? x.dev / x.bruto : 0), 0) / Math.max(1, summary.length);
-        drivers.avgBonShare = summary.reduce((s,x)=>s + (x.bruto ? x.bon / x.bruto : 0), 0) / Math.max(1, summary.length);
+      const drivers={notesDrop:false,devIncrease:false,bonIncrease:false,descIncrease:false,avgDevShare:0,avgBonShare:0,avgDescShare:0};
+      if (summary.length>=2){
+        const first=summary[0],last=summary[summary.length-1];
+        drivers.notesDrop    = last.notas < first.notas;
+        drivers.devIncrease  = last.dev   > first.dev;
+        drivers.bonIncrease  = last.bon   > first.bon;
+        drivers.descIncrease = last.desc  > first.desc;
+        drivers.avgDevShare  = summary.reduce((s,x)=>s+(x.bruto?x.dev/x.bruto:0),0)/Math.max(1,summary.length);
+        drivers.avgBonShare  = summary.reduce((s,x)=>s+(x.bruto?x.bon/x.bruto:0),0)/Math.max(1,summary.length);
+        drivers.avgDescShare = summary.reduce((s,x)=>s+(x.bruto?x.desc/x.bruto:0),0)/Math.max(1,summary.length);
       }
 
-      const immediate = [];
-      const shortTerm = [];
-      const mediumTerm = [];
-      const notes = [];
-
-      if (drivers.notesDrop) {
-        immediate.push('Contactar clientes com maior queda de pedidos (listar top clientes afetados) e priorizar reativação/recuperação.');
-        notes.push('Detectada redução no número de notas.');
-      }
-      if (drivers.devIncrease) {
-        immediate.push('Investigar devoluções: gerar lista dos SKUs com maior devolução e abrir ação com Qualidade/Logística.');
-        notes.push('Aumento de devoluções detectado.');
-      }
-      if (drivers.bonIncrease) {
-        immediate.push('Rever e pausar bonificações/campanhas de baixo ROI imediatamente.');
-        notes.push('Bonificações estão mais altas no período recente.');
-      }
-
-      immediate.push('Verificar disponibilidade de estoque e status de entregas/atrasos nas últimas 72 horas.');
+      const immediate=[],shortTerm=[],mediumTerm=[],notes=[];
+      if (drivers.notesDrop)    { immediate.push('Contactar clientes com maior queda de pedidos e priorizar reativação.'); notes.push('Detectada redução no número de notas.'); }
+      if (drivers.devIncrease)  { immediate.push('Investigar devoluções: gerar lista dos SKUs com maior devolução.'); notes.push('Aumento de devoluções detectado.'); }
+      if (drivers.bonIncrease)  { immediate.push('Rever e pausar bonificações/campanhas de baixo ROI.'); notes.push('Bonificações mais altas no período recente.'); }
+      if (drivers.descIncrease) { immediate.push('Revisar política de descontos: avaliar impacto no faturamento líquido.'); notes.push('Descontos aumentaram no período recente.'); }
+      immediate.push('Verificar disponibilidade de estoque e status de entregas nas últimas 72 horas.');
       immediate.push('Priorizar entregas pendentes para rotas com maior impacto negativo.');
+      if (worstRoutes&&worstRoutes.length) shortTerm.push(`Analisar rotas com pior desempenho: ${worstRoutes.slice(0,3).map(w=>`${w[0]} (${fmtBRL(w[1])})`).join(', ')}.`);
+      if (topProducts&&topProducts.length) shortTerm.push(`Rever SKUs com maior impacto: ${topProducts.slice(0,3).map(p=>`${p[0]} (${fmtBRL(p[1])})`).join(', ')}.`);
+      if (drivers.avgDevShare>0.05)  mediumTerm.push('Criar programa de redução de devoluções por SKU e rota.');
+      if (drivers.avgBonShare>0.03)  mediumTerm.push('Revisar política comercial de bonificações e margens líquidas.');
+      if (drivers.avgDescShare>0.02) mediumTerm.push('Revisar política de descontos e seu impacto nas margens.');
+      mediumTerm.push('Implementar alertas automáticos (devoluções > X%, queda de faturamento > Y%) por rota/SKU.');
+      mediumTerm.push('Treinar equipes de vendas em recuperação de clientes e upsell.');
 
-      if (worstRoutes && worstRoutes.length) {
-        const worstTop = worstRoutes.slice(0,3).map(w => `${w[0]} (${fmtBRL(w[1])})`);
-        shortTerm.push(`Analisar detalhadamente as rotas com pior desempenho: ${worstTop.join(', ')} — checar entregas, clientes e problemas locais.`);
-      }
-      if (topProducts && topProducts.length) {
-        const topProdHighDev = topProducts.slice(0,3).map(p => `${p[0]} (${fmtBRL(p[1])})`);
-        shortTerm.push(`Rever SKUs com maior impacto de receita: ${topProdHighDev.join(', ')} — avaliar mix, qualidade e promoções.`);
-      }
-
-      if (drivers.avgDevShare > 0.05) mediumTerm.push('Criar programa de redução de devoluções: root-cause analysis por SKU e rota.');
-      if (drivers.avgBonShare > 0.03) mediumTerm.push('Revisar política comercial de bonificações e sua relação com margens líquidas.');
-
-      mediumTerm.push('Implementar painel de alertas automáticos (devoluções > X%, queda de faturamento > Y%) por rota/SKU.');
-      mediumTerm.push('Treinar equipes de vendas/atendimento em recuperação de clientes e upsell.');
-
-      const uniq = arr => [...new Set(arr)].slice(0,20);
-
-      return {
-        immediate: uniq(immediate),
-        short: uniq(shortTerm),
-        medium: uniq(mediumTerm),
-        notes: uniq(notes.length ? notes : ['Sem anomalias claras detectadas automaticamente.']),
-        topRoutes: topRoutes.slice(0,10),
-        worstRoutes: worstRoutes.slice(0,10),
-        topProducts: topProducts.slice(0,10),
-        summaryPeriods: summary
-      };
+      const uniq = arr=>[...new Set(arr)].slice(0,20);
+      return { immediate:uniq(immediate), short:uniq(shortTerm), medium:uniq(mediumTerm), notes:uniq(notes.length?notes:['Sem anomalias claras detectadas.']), topRoutes:topRoutes.slice(0,10), worstRoutes:worstRoutes.slice(0,10), topProducts:topProducts.slice(0,10), summaryPeriods:summary };
     }
 
-    // ---------- Diagnosis UI actions ----------
     function clearDiagnosis() {
-      const diagBox = document.getElementById('auto-diagnosis');
-      const notes = document.getElementById('auto-notes');
-      if (diagBox) diagBox.innerHTML = '<i>Pressione "Gerar diagnóstico" para começar.</i>';
-      if (notes) notes.innerHTML = '<li>Sem anotações automáticas.</li>';
-      const sugg = document.getElementById('suggestions-card');
-      if (sugg) sugg.style.display = 'none';
-      console.log('[IA] diagnóstico limpo pelo usuário');
+      const diagBox=document.getElementById('auto-diagnosis'), notes=document.getElementById('auto-notes');
+      if (diagBox) diagBox.innerHTML='<i>Pressione "Gerar diagnóstico" para começar.</i>';
+      if (notes)   notes.innerHTML='<li>Sem anotações automáticas.</li>';
+      const sugg=document.getElementById('suggestions-card'); if(sugg) sugg.style.display='none';
     }
 
     async function runAutoDiagnosis() {
-      const btn = document.getElementById('btn-run-diagnosis');
-      const diagBox = document.getElementById('auto-diagnosis');
-      if (!btn || !diagBox) return;
-      btn.disabled = true;
-      const originalText = btn.innerText;
-      btn.innerText = 'Gerando ...';
-      diagBox.innerHTML = '<i>Gerando diagnóstico com os filtros selecionados...</i>';
-
+      const btn=document.getElementById('btn-run-diagnosis'), diagBox=document.getElementById('auto-diagnosis');
+      if (!btn||!diagBox) return;
+      btn.disabled=true; const orig=btn.innerText; btn.innerText='Gerando ...';
+      diagBox.innerHTML='<i>Gerando diagnóstico...</i>';
       try {
-        const filtered = getFilteredData();
-        if (!filtered.length) {
-          diagBox.innerHTML = '<b>Sem dados no período filtrado.</b>';
-          document.getElementById('auto-notes').innerHTML = '<li>Sem anotações automáticas.</li>';
-          return;
-        }
-
-        const generated = generateSuggestionsForFiltered(filtered);
-        const summaryParts = [];
-
-        if (generated.summaryPeriods.length >= 1) {
-          const first = generated.summaryPeriods[0];
-          const last = generated.summaryPeriods[generated.summaryPeriods.length - 1];
-          const pct = ((last.liquido - first.liquido) / Math.max(1, Math.abs(first.liquido))) * 100;
-          summaryParts.push(`<b>Variação (primeiro vs último):</b> ${fmtBRL(first.liquido)} → ${fmtBRL(last.liquido)} (${pct>=0?'+':''}${pct.toFixed(1)}%)`);
-        } else {
-          summaryParts.push('<b>Sem períodos para sumarizar.</b>');
-        }
-
-        if (generated.topRoutes && generated.topRoutes.length) {
-          const top = generated.topRoutes.slice(0,5).map(r => `${r[0]}: ${fmtBRL(r[1])}`).join('<br>');
-          summaryParts.push(`<b>Top rotas (impacto):</b><br>${top}`);
-        }
-        if (generated.worstRoutes && generated.worstRoutes.length) {
-          const worst = generated.worstRoutes.slice(0,5).map(r => `${r[0]}: ${fmtBRL(r[1])}`).join('<br>');
-          summaryParts.push(`<b>Rotas com pior performance:</b><br>${worst}`);
-        }
-        if (generated.topProducts && generated.topProducts.length) {
-          const prods = generated.topProducts.slice(0,5).map(p => `${p[0]}: ${fmtBRL(p[1])}`).join('<br>');
-          summaryParts.push(`<b>Top produtos:</b><br>${prods}`);
-        }
-
-        const topImmediate = generated.immediate.slice(0,5).map(i => `<li>${i}</li>`).join('');
-        const topShort = generated.short.slice(0,5).map(i => `<li>${i}</li>`).join('');
-        const topMedium = generated.medium.slice(0,5).map(i => `<li>${i}</li>`).join('');
-
-        const htmlParts = [];
-        htmlParts.push('<div style="font-weight:800; margin-bottom:8px">Resumo & Principais Drivers</div>');
-        htmlParts.push('<div style="margin-bottom:8px">' + summaryParts.join('<br>') + '</div>');
-        htmlParts.push('<div style="font-weight:800; margin-top:10px">Ações recomendadas — IMEDIATAS (0-7 dias)</div>');
-        htmlParts.push(`<ul style="padding-left:18px; margin-top:6px">${topImmediate}</ul>`);
-        if (topShort) { htmlParts.push('<div style="font-weight:800; margin-top:10px">Ações — CURTO PRAZO (7-30 dias)</div>'); htmlParts.push(`<ul style="padding-left:18px; margin-top:6px">${topShort}</ul>`); }
-        if (topMedium) { htmlParts.push('<div style="font-weight:800; margin-top:10px">Ações — MÉDIO PRAZO (30-90 dias)</div>'); htmlParts.push(`<ul style="padding-left:18px; margin-top:6px">${topMedium}</ul>`); }
-
-        htmlParts.push('<div style="font-weight:800; margin-top:10px">KPIs sugeridos</div>');
-        htmlParts.push('<ul style="padding-left:18px; margin-top:6px"><li>Receita diária por rota</li><li>Taxa de devolução por SKU</li><li>Bonificação por campanha</li><li>Ticket médio por cliente</li><li>Número de notas por dia</li></ul>');
-
-        diagBox.innerHTML = htmlParts.join('');
-        document.getElementById('auto-notes').innerHTML = generated.notes.map(n=>`<li>${n}</li>`).join('');
-
-        if (document.getElementById('suggestions-card').style.display === 'block') {
-          populateSuggestionsCardWithGenerated(generated);
-        }
-      } catch (err) {
-        console.error('Erro em runAutoDiagnosis:', err);
-        document.getElementById('auto-diagnosis').innerHTML = `<b>Erro ao gerar diagnóstico:</b> ${escapeHtml(err.message || String(err))}`;
-      } finally {
-        btn.disabled = false;
-        btn.innerText = originalText || 'Gerar diagnóstico';
-      }
+        const filtered=getFilteredData();
+        if (!filtered.length){ diagBox.innerHTML='<b>Sem dados no período filtrado.</b>'; document.getElementById('auto-notes').innerHTML='<li>Sem anotações automáticas.</li>'; return; }
+        const gen=generateSuggestionsForFiltered(filtered);
+        const parts=[];
+        if (gen.summaryPeriods.length>=1){
+          const first=gen.summaryPeriods[0],last=gen.summaryPeriods[gen.summaryPeriods.length-1];
+          const pct=((last.liquido-first.liquido)/Math.max(1,Math.abs(first.liquido)))*100;
+          parts.push(`<b>Variação (primeiro vs último):</b> ${fmtBRL(first.liquido)} → ${fmtBRL(last.liquido)} (${pct>=0?'+':''}${pct.toFixed(1)}%)`);
+        } else parts.push('<b>Sem períodos para sumarizar.</b>');
+        if (gen.topRoutes&&gen.topRoutes.length)   parts.push(`<b>Top rotas:</b><br>${gen.topRoutes.slice(0,5).map(r=>`${r[0]}: ${fmtBRL(r[1])}`).join('<br>')}`);
+        if (gen.worstRoutes&&gen.worstRoutes.length) parts.push(`<b>Piores rotas:</b><br>${gen.worstRoutes.slice(0,5).map(r=>`${r[0]}: ${fmtBRL(r[1])}`).join('<br>')}`);
+        if (gen.topProducts&&gen.topProducts.length) parts.push(`<b>Top produtos:</b><br>${gen.topProducts.slice(0,5).map(p=>`${p[0]}: ${fmtBRL(p[1])}`).join('<br>')}`);
+        const htmlParts=[];
+        htmlParts.push('<div style="font-weight:800;margin-bottom:8px">Resumo & Principais Drivers</div>');
+        htmlParts.push('<div style="margin-bottom:8px">'+parts.join('<br>')+'</div>');
+        htmlParts.push('<div style="font-weight:800;margin-top:10px">Ações IMEDIATAS (0-7 dias)</div>');
+        htmlParts.push(`<ul style="padding-left:18px;margin-top:6px">${gen.immediate.slice(0,5).map(i=>`<li>${i}</li>`).join('')}</ul>`);
+        if (gen.short.length)  { htmlParts.push('<div style="font-weight:800;margin-top:10px">CURTO PRAZO (7-30 dias)</div>');  htmlParts.push(`<ul style="padding-left:18px;margin-top:6px">${gen.short.slice(0,5).map(i=>`<li>${i}</li>`).join('')}</ul>`); }
+        if (gen.medium.length) { htmlParts.push('<div style="font-weight:800;margin-top:10px">MÉDIO PRAZO (30-90 dias)</div>'); htmlParts.push(`<ul style="padding-left:18px;margin-top:6px">${gen.medium.slice(0,5).map(i=>`<li>${i}</li>`).join('')}</ul>`); }
+        htmlParts.push('<div style="font-weight:800;margin-top:10px">KPIs sugeridos</div>');
+        htmlParts.push('<ul style="padding-left:18px;margin-top:6px"><li>Receita diária por rota</li><li>Taxa de devolução por SKU</li><li>Bonificação por campanha</li><li>Desconto por operação</li><li>Ticket médio por cliente</li></ul>');
+        diagBox.innerHTML=htmlParts.join('');
+        document.getElementById('auto-notes').innerHTML=gen.notes.map(n=>`<li>${n}</li>`).join('');
+        if (document.getElementById('suggestions-card').style.display==='block') populateSuggestionsCardWithGenerated(gen);
+      } catch(err){ console.error(err); document.getElementById('auto-diagnosis').innerHTML=`<b>Erro:</b> ${escapeHtml(err.message||String(err))}`; }
+      finally { btn.disabled=false; btn.innerText=orig||'Gerar diagnóstico'; }
     }
 
-    function populateSuggestionsCardWithGenerated(generated) {
-      if (!generated) {
-        document.getElementById('suggestions-content').innerHTML = '<b>Sem dados para gerar sugestões.</b>';
-        return;
-      }
-      const lines = [];
+    function populateSuggestionsCardWithGenerated(gen) {
+      if (!gen){ document.getElementById('suggestions-content').innerHTML='<b>Sem dados.</b>'; return; }
+      const lines=[];
       lines.push('<div style="margin-bottom:8px"><b>Resumo rápido</b></div>');
-      if (generated.summaryPeriods.length >= 1) {
-        const first = generated.summaryPeriods[0], last = generated.summaryPeriods[generated.summaryPeriods.length-1];
-        lines.push(`<div style="font-size:13px; margin-bottom:8px">${first.periodo} → ${last.periodo}: ${fmtBRL(first.liquido)} → ${fmtBRL(last.liquido)}</div>`);
-      }
-
-      if (generated.immediate && generated.immediate.length) {
-        lines.push('<div style="font-weight:700; margin-top:6px">IMEDIATAS (0-7 dias)</div>');
-        lines.push('<ul style="padding-left:18px; margin-top:6px">' + generated.immediate.map(i=>`<li>${i}</li>`).join('') + '</ul>');
-      }
-      if (generated.short && generated.short.length) {
-        lines.push('<div style="font-weight:700; margin-top:10px">CURTO PRAZO (7-30 dias)</div>');
-        lines.push('<ul style="padding-left:18px; margin-top:6px">' + generated.short.map(i=>`<li>${i}</li>`).join('') + '</ul>');
-      }
-      if (generated.medium && generated.medium.length) {
-        lines.push('<div style="font-weight:700; margin-top:10px">MÉDIO PRAZO (30-90 dias)</div>');
-        lines.push('<ul style="padding-left:18px; margin-top:6px">' + generated.medium.map(i=>`<li>${i}</li>`).join('') + '</ul>');
-      }
-
-      if (generated.worstRoutes && generated.worstRoutes.length) {
-        const listWorst = generated.worstRoutes.slice(0,5).map(r => `${r[0]} (${fmtBRL(r[1])})`).join(', ');
-        lines.push(`<div style="font-weight:700; margin-top:10px">Rotas a priorizar</div><div style="margin-top:6px">${listWorst}</div>`);
-      }
-      if (generated.topProducts && generated.topProducts.length) {
-        const listProd = generated.topProducts.slice(0,5).map(p => `${p[0]} (${fmtBRL(p[1])})`).join(', ');
-        lines.push(`<div style="font-weight:700; margin-top:10px">Produtos a revisar</div><div style="margin-top:6px">${listProd}</div>`);
-      }
-
-      document.getElementById('suggestions-content').innerHTML = lines.join('');
+      if (gen.summaryPeriods.length>=1){ const f=gen.summaryPeriods[0],l=gen.summaryPeriods[gen.summaryPeriods.length-1]; lines.push(`<div style="font-size:13px;margin-bottom:8px">${f.periodo} → ${l.periodo}: ${fmtBRL(f.liquido)} → ${fmtBRL(l.liquido)}</div>`); }
+      if (gen.immediate&&gen.immediate.length){ lines.push('<div style="font-weight:700;margin-top:6px">IMEDIATAS (0-7 dias)</div>'); lines.push('<ul style="padding-left:18px;margin-top:6px">'+gen.immediate.map(i=>`<li>${i}</li>`).join('')+'</ul>'); }
+      if (gen.short&&gen.short.length)        { lines.push('<div style="font-weight:700;margin-top:10px">CURTO PRAZO (7-30 dias)</div>'); lines.push('<ul style="padding-left:18px;margin-top:6px">'+gen.short.map(i=>`<li>${i}</li>`).join('')+'</ul>'); }
+      if (gen.medium&&gen.medium.length)      { lines.push('<div style="font-weight:700;margin-top:10px">MÉDIO PRAZO (30-90 dias)</div>'); lines.push('<ul style="padding-left:18px;margin-top:6px">'+gen.medium.map(i=>`<li>${i}</li>`).join('')+'</ul>'); }
+      if (gen.worstRoutes&&gen.worstRoutes.length) lines.push(`<div style="font-weight:700;margin-top:10px">Rotas a priorizar</div><div style="margin-top:6px">${gen.worstRoutes.slice(0,5).map(r=>`${r[0]} (${fmtBRL(r[1])})`).join(', ')}</div>`);
+      if (gen.topProducts&&gen.topProducts.length) lines.push(`<div style="font-weight:700;margin-top:10px">Produtos a revisar</div><div style="margin-top:6px">${gen.topProducts.slice(0,5).map(p=>`${p[0]} (${fmtBRL(p[1])})`).join(', ')}</div>`);
+      document.getElementById('suggestions-content').innerHTML=lines.join('');
     }
 
     function showSuggestionsCard() {
-      const filtered = getFilteredData();
-      const card = document.getElementById('suggestions-card');
-      if (!filtered.length) {
-        document.getElementById('suggestions-content').innerHTML = '<b>Sem dados no período filtrado.</b>';
-        card.style.display = 'block';
-        card.scrollIntoView({behavior:'smooth', block:'center'});
-        return;
-      }
-      const generated = generateSuggestionsForFiltered(filtered);
-      populateSuggestionsCardWithGenerated(generated);
-      card.style.display = 'block';
-      card.scrollIntoView({behavior:'smooth', block:'center'});
+      const filtered=getFilteredData(), card=document.getElementById('suggestions-card');
+      if (!filtered.length){ document.getElementById('suggestions-content').innerHTML='<b>Sem dados no período filtrado.</b>'; card.style.display='block'; card.scrollIntoView({behavior:'smooth',block:'center'}); return; }
+      populateSuggestionsCardWithGenerated(generateSuggestionsForFiltered(filtered));
+      card.style.display='block'; card.scrollIntoView({behavior:'smooth',block:'center'});
     }
-
-    function hideSuggestionsCard() {
-      document.getElementById('suggestions-card').style.display = 'none';
-    }
+    function hideSuggestionsCard(){ document.getElementById('suggestions-card').style.display='none'; }
 
     function setupInsights() {
-      const btnDiag = document.getElementById('btn-run-diagnosis');
-      if (btnDiag) btnDiag.onclick = runAutoDiagnosis;
-      const btnClear = document.getElementById('btn-clear-diagnosis');
-      if (btnClear) btnClear.onclick = clearDiagnosis;
-      const btnSug = document.getElementById('btn-suggestions');
-      if (btnSug) btnSug.onclick = showSuggestionsCard;
-      const btnCloseSug = document.getElementById('close-suggestions');
-      if (btnCloseSug) btnCloseSug.onclick = hideSuggestionsCard;
-      const btnAsk = document.getElementById('btn-ask');
-      if (btnAsk) btnAsk.onclick = handleAIAsk;
-      const btnClearAI = document.getElementById('btn-clear-ai');
-      if (btnClearAI) btnClearAI.onclick = () => { document.getElementById('ai-question').value = ''; document.getElementById('ai-response').innerHTML = ''; };
+      const btnDiag=document.getElementById('btn-run-diagnosis'); if(btnDiag) btnDiag.onclick=runAutoDiagnosis;
+      const btnClear=document.getElementById('btn-clear-diagnosis'); if(btnClear) btnClear.onclick=clearDiagnosis;
+      const btnSug=document.getElementById('btn-suggestions'); if(btnSug) btnSug.onclick=showSuggestionsCard;
+      const btnCloseSug=document.getElementById('close-suggestions'); if(btnCloseSug) btnCloseSug.onclick=hideSuggestionsCard;
+      const btnAsk=document.getElementById('btn-ask'); if(btnAsk) btnAsk.onclick=handleAIAsk;
+      const btnClearAI=document.getElementById('btn-clear-ai'); if(btnClearAI) btnClearAI.onclick=()=>{ document.getElementById('ai-question').value=''; document.getElementById('ai-response').innerHTML=''; };
     }
 
-    // ---------- Utils for AI timeout & fetch ----------
-    function fetchWithTimeout(url, options = {}, timeout = AI_TIMEOUT_MS) {
-      return new Promise((resolve, reject) => {
-        const controller = new AbortController();
-        const id = setTimeout(() => {
-          controller.abort();
-          reject(new Error('timeout'));
-        }, timeout);
-        fetch(url, {...options, signal: controller.signal})
-          .then(res => {
-            clearTimeout(id);
-            resolve(res);
-          })
-          .catch(err => {
-            clearTimeout(id);
-            reject(err);
-          });
+    function fetchWithTimeout(url,options={},timeout=AI_TIMEOUT_MS){
+      return new Promise((resolve,reject)=>{
+        const controller=new AbortController();
+        const id=setTimeout(()=>{ controller.abort(); reject(new Error('timeout')); },timeout);
+        fetch(url,{...options,signal:controller.signal}).then(res=>{clearTimeout(id);resolve(res);}).catch(err=>{clearTimeout(id);reject(err);});
       });
     }
 
-    function escapeHtml(text) {
-      return String(text || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
+    function escapeHtml(text){ return String(text||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-    // ---------- AI Ask (external with timeout -> fallback local) ----------
     async function handleAIAsk() {
-      const qRaw = (document.getElementById('ai-question').value || '').trim();
-      const out = document.getElementById('ai-response');
-      const btn = document.getElementById('btn-ask');
-      if (!qRaw) { out.innerHTML = '<i>Digite uma pergunta.</i>'; return; }
+      const qRaw=(document.getElementById('ai-question').value||'').trim();
+      const out=document.getElementById('ai-response'), btn=document.getElementById('btn-ask');
+      if (!qRaw){ out.innerHTML='<i>Digite uma pergunta.</i>'; return; }
 
-      // quick parse: if user specified two periods like "jan 2025 e jun 2025", handle directly with compare routine
-      const re = /\b(jan(?:eiro)?|fev(?:ereiro)?|mar(?:ço|co)?|abr(?:il)?|mai(?:o)?|jun(?:ho)?|jul(?:ho)?|ago(?:sto)?|set(?:embro)?|out(?:ubro)?|nov(?:embro)?|dez(?:embro)?)[\s,]*(?:de)?[\s]*(\d{4})/gi;
-      const matches = [...qRaw.matchAll(re)];
-      if (matches.length >= 2) {
-        const a = matches[0], b = matches[1];
-        const norm = s => {
-          const sNorm = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-          for (const k of Object.keys(monthMap)) {
-            if (k.normalize('NFD').replace(/[\u0300-\u036f]/g, '').startsWith(sNorm.slice(0,3))) return monthMap[k];
-          }
-          return 1;
-        };
-        const mes1 = norm(a[1]), ano1 = a[2];
-        const mes2 = norm(b[1]), ano2 = b[2];
-        answerComparePeriods({mes:mes1, ano: ano1}, {mes:mes2, ano: ano2});
-        return;
+      const re=/\b(jan(?:eiro)?|fev(?:ereiro)?|mar(?:ço|co)?|abr(?:il)?|mai(?:o)?|jun(?:ho)?|jul(?:ho)?|ago(?:sto)?|set(?:embro)?|out(?:ubro)?|nov(?:embro)?|dez(?:embro)?)[\s,]*(?:de)?[\s]*(\d{4})/gi;
+      const matches=[...qRaw.matchAll(re)];
+      if (matches.length>=2){
+        const a=matches[0],b=matches[1];
+        const norm=s=>{ const sN=s.normalize('NFD').replace(/[\u0300-\u036f]/g,''); for(const k of Object.keys(monthMap)){if(k.normalize('NFD').replace(/[\u0300-\u036f]/g,'').startsWith(sN.slice(0,3)))return monthMap[k];} return 1; };
+        answerComparePeriods({mes:norm(a[1]),ano:a[2]},{mes:norm(b[1]),ano:b[2]}); return;
       }
 
-      // Show loading state
-      out.innerHTML = '<i>IA: pesquisando e respondendo...</i>';
-      btn.disabled = true;
-
-      // Prepare payload (send filters to external IA if present)
-      const payload = { question: qRaw, filters: getFiltersFromChoices() };
-
-      // Try external AI first with timeout
-      const externalUrl = 'http://localhost:3000/ask'; // <-- ajuste aqui se seu proxy/servidor estiver em outra URL/porta
+      out.innerHTML='<i>IA: pesquisando e respondendo...</i>'; btn.disabled=true;
+      const payload={question:qRaw,filters:getFiltersFromChoices()};
+      const externalUrl='http://localhost:3000/ask';
       try {
-        const res = await fetchWithTimeout(externalUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        }, AI_TIMEOUT_MS);
+        const res=await fetchWithTimeout(externalUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)},AI_TIMEOUT_MS);
+        if (!res.ok) throw new Error('IA externa retornou erro: '+res.status);
+        const json=await res.json();
+        if (json&&json.answer){ out.innerHTML=`<div style="white-space:pre-wrap">${escapeHtml(json.answer)}</div>`; btn.disabled=false; return; }
+      } catch(err){ console.warn('IA externa indisponível:',err&&err.message?err.message:err); }
 
-        if (!res.ok) throw new Error('IA externa retornou erro: ' + res.status);
-        const json = await res.json();
-        if (json && json.answer) {
-          out.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(json.answer)}</div>`;
-          btn.disabled = false;
-          return;
-        } else {
-          // If response doesn't have answer, fallback
-          console.warn('IA externa respondeu sem "answer", fazendo fallback local.');
-        }
-      } catch (err) {
-        // Expected: timeout or connection refused -> fallback to local
-        console.warn('IA externa indisponível ou timeout:', err && err.message ? err.message : err);
-      }
-
-      // Fallback imediato: IA local (mais robusta)
       try {
-        const filtered = getFilteredData();
-        if (!filtered.length) {
-          out.innerHTML = '<i>Sem dados no período/seleção atual. Ajuste os filtros e tente novamente.</i>';
-          btn.disabled = false;
-          return;
-        }
-
-        // Build a more complete local response by combining multiple analyses
-        const generated = generateSuggestionsForFiltered(filtered);
-        const periodAgg = {};
-        filtered.forEach(r => {
-          const key = `${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
-          if (!periodAgg[key]) periodAgg[key] = { bruto:0, dev:0, bon:0, notas:0, clientes:0 };
-          if (r.id_grupo === 'Vendas') periodAgg[key].bruto += r.valor;
-          else if (r.id_grupo === 'Dev. Vendas') periodAgg[key].dev += r.valor;
-          else if (r.id_grupo === 'Bonificação') periodAgg[key].bon += r.valor;
-          periodAgg[key].notas += r.notas || 0;
-          periodAgg[key].clientes += r.clientes || 0;
-        });
-        const periods = Object.keys(periodAgg).sort();
-        const recentPeriods = periods.slice(-6);
-
-        // Top routes
-        const routeMap = {};
-        filtered.forEach(r => {
-          const rt = r.id_rota || 'Sem Rota';
-          const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
-          routeMap[rt] = (routeMap[rt] || 0) + v;
-        });
-        const topRoutes = Object.entries(routeMap).sort((a,b)=>b[1]-a[1]).slice(0,7);
-
-        // Top products (best and worst by net)
-        const prodMap = {};
-        const prodKeys = ['PRODUTO','produto','PRODUTO_DESCR','PROD','Produto'];
+        const filtered=getFilteredData();
+        if (!filtered.length){ out.innerHTML='<i>Sem dados no período/seleção atual.</i>'; btn.disabled=false; return; }
+        const gen=generateSuggestionsForFiltered(filtered);
+        const periodAgg={};
         filtered.forEach(r=>{
-          let sku = null;
-          for (const k of prodKeys) {
-            if (r[k]) { sku = String(r[k]).trim(); break; }
-          }
-          if (!sku) return;
-          const v = (r.id_grupo === 'Vendas' ? r.valor : (r.id_grupo === 'Dev. Vendas' || r.id_grupo === 'Bonificação' ? -r.valor : 0));
-          prodMap[sku] = (prodMap[sku]||0) + v;
+          const key=`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
+          if (!periodAgg[key]) periodAgg[key]={bruto:0,dev:0,bon:0,desc:0,notas:0,clientes:0};
+          if (isGrupoVendas(r))   periodAgg[key].bruto+=r.valor;
+          if (isGrupoDev(r))      periodAgg[key].dev  +=r.valor;
+          if (isGrupoBon(r))      periodAgg[key].bon  +=r.valor;
+          if (isGrupoDesconto(r)) periodAgg[key].desc +=r.valor;
+          periodAgg[key].notas    +=r.notas||0;
+          periodAgg[key].clientes +=r.clientes||0;
         });
-        const topProducts = Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,7);
+        const periods=Object.keys(periodAgg).sort(), recentPeriods=periods.slice(-6);
+        const routeMap={};
+        filtered.forEach(r=>{ const rt=r.id_rota||'Sem Rota'; routeMap[rt]=(routeMap[rt]||0)+valorLiq(r); });
+        const topRoutes=Object.entries(routeMap).sort((a,b)=>b[1]-a[1]).slice(0,7);
+        const prodMap={};
+        const prodKeys=['PRODUTO','produto','PRODUTO_DESCR','PROD','Produto'];
+        filtered.forEach(r=>{ let sku=null; for(const k of prodKeys){if(r[k]){sku=String(r[k]).trim();break;}} if(!sku)return; prodMap[sku]=(prodMap[sku]||0)+valorLiq(r); });
+        const topProducts=Object.entries(prodMap).sort((a,b)=>b[1]-a[1]).slice(0,7);
 
-        // Compose answer: summary, drivers, top routes/products, action plan, KPIs to monitor
-        const lines = [];
-        lines.push(`Resposta automática (IA local) — pergunta: "${qRaw}"`);
-        lines.push('');
+        const lines=[];
+        lines.push(`Resposta automática (IA local) — pergunta: "${qRaw}"`,'');
         lines.push('Resumo rápido do período filtrado:');
-        if (recentPeriods.length) {
-          recentPeriods.forEach(p => {
-            const o = periodAgg[p];
-            const liquido = Math.round((o.bruto - (o.dev + o.bon)) || 0);
-            lines.push(`- ${p}: bruto=${fmtBRL(o.bruto)} · dev=${fmtBRL(o.dev)} · bon=${fmtBRL(o.bon)} · líquido=${fmtBRL(liquido)} · notas=${o.notas} · clientes=${o.clientes}`);
-          });
-        } else {
-          lines.push('- Sem períodos suficientes para sumarizar.');
-        }
-
+        if (recentPeriods.length) recentPeriods.forEach(p=>{ const o=periodAgg[p]; lines.push(`- ${p}: bruto=${fmtBRL(o.bruto)} · dev=${fmtBRL(o.dev)} · bon=${fmtBRL(o.bon)} · desc=${fmtBRL(o.desc)} · líquido=${fmtBRL(o.bruto-o.dev-o.bon-o.desc)} · notas=${o.notas} · clientes=${o.clientes}`); });
+        else lines.push('- Sem períodos suficientes.');
         lines.push('');
-        // Drivers detectados (use generated)
-        if (generated.summaryPeriods.length >= 1) {
-          lines.push('Principais drivers identificados:');
-          if (generated.notes && generated.notes.length) {
-            generated.notes.forEach(n => lines.push(`- ${n}`));
-          } else {
-            lines.push('- Nenhum driver automático detectado claramente.');
-          }
-        }
-
+        if (gen.summaryPeriods.length>=1){ lines.push('Principais drivers identificados:'); (gen.notes||[]).forEach(n=>lines.push(`- ${n}`)); }
         lines.push('');
-        // Top routes
-        if (topRoutes.length) {
-          lines.push('Top rotas (impacto no faturamento líquido):');
-          topRoutes.forEach((r,i) => lines.push(`${i+1}. ${r[0]} — ${fmtBRL(r[1])}`));
-        }
-
+        if (topRoutes.length){ lines.push('Top rotas (faturamento líquido):'); topRoutes.forEach((r,i)=>lines.push(`${i+1}. ${r[0]} — ${fmtBRL(r[1])}`)); }
         lines.push('');
-        if (topProducts.length) {
-          lines.push('Produtos principais (por impacto líquido):');
-          topProducts.forEach((p,i) => lines.push(`${i+1}. ${p[0]} — ${fmtBRL(p[1])}`));
-        }
-
+        if (topProducts.length){ lines.push('Produtos principais:'); topProducts.forEach((p,i)=>lines.push(`${i+1}. ${p[0]} — ${fmtBRL(p[1])}`)); }
         lines.push('');
-        lines.push('Ações recomendadas (prioridade):');
-        if (generated.immediate && generated.immediate.length) {
-          lines.push('IMEDIATAS (0-7 dias):');
-          generated.immediate.forEach(i => lines.push(`- ${i}`));
-        }
-        if (generated.short && generated.short.length) {
-          lines.push('CURTO PRAZO (7-30 dias):');
-          generated.short.forEach(i => lines.push(`- ${i}`));
-        }
-        if (generated.medium && generated.medium.length) {
-          lines.push('MÉDIO PRAZO (30-90 dias):');
-          generated.medium.forEach(i => lines.push(`- ${i}`));
-        }
-
-        lines.push('');
-        lines.push('KPIs a acompanhar imediatamente: receita por rota (diária), devolução por SKU (%), bonificação por campanha, ticket médio, nº de notas/dia.');
-        lines.push('');
-        lines.push('Observação: para análises muito robustas e explicações geradas por LLM (texto longo com contexto adicional) conecte um servidor de IA (ex.: Ollama/LM Studio/OAPI) e atualize a variável externalUrl no código.');
-
-        out.innerHTML = `<div style="white-space:pre-wrap">${escapeHtml(lines.join('\n'))}</div>`;
-      } catch (err) {
-        console.error('Erro na IA local fallback:', err);
-        out.innerHTML = `<i>Erro ao gerar resposta local: ${escapeHtml(err.message || String(err))}</i>`;
-      } finally {
-        btn.disabled = false;
-      }
+        lines.push('Ações recomendadas:');
+        if (gen.immediate&&gen.immediate.length){ lines.push('IMEDIATAS:'); gen.immediate.forEach(i=>lines.push(`- ${i}`)); }
+        if (gen.short&&gen.short.length)        { lines.push('CURTO PRAZO:'); gen.short.forEach(i=>lines.push(`- ${i}`)); }
+        if (gen.medium&&gen.medium.length)      { lines.push('MÉDIO PRAZO:'); gen.medium.forEach(i=>lines.push(`- ${i}`)); }
+        lines.push('','KPIs: receita por rota (diária), devolução por SKU (%), bonificação por campanha, desconto por operação, ticket médio, nº de notas/dia.');
+        out.innerHTML=`<div style="white-space:pre-wrap">${escapeHtml(lines.join('\n'))}</div>`;
+      } catch(err){ console.error(err); out.innerHTML=`<i>Erro ao gerar resposta local: ${escapeHtml(err.message||String(err))}</i>`; }
+      finally { btn.disabled=false; }
     }
 
-    // ---------- Compare routine (same as earlier) ----------
-    function answerComparePeriods(p1, p2) {
-      const filtered = getFilteredData();
-
-      const rows1 = filtered.filter(r => String(r.id_ano) === String(p1.ano) && Number(r.mesNum) === Number(p1.mes));
-      const rows2 = filtered.filter(r => String(r.id_ano) === String(p2.ano) && Number(r.mesNum) === Number(p2.mes));
-
-      if (!rows1.length && !rows2.length) {
-        document.getElementById('ai-response').innerHTML = `<b>Sem dados para os períodos solicitados (com os filtros aplicados).</b>`;
-        return;
-      }
-
-      const agg = (rows) => {
-        const obj = { bruto:0, dev:0, bon:0, notas:0, clientes:0 };
-        rows.forEach(r=>{
-          if (r.id_grupo === 'Vendas') obj.bruto += r.valor;
-          else if (r.id_grupo === 'Dev. Vendas') obj.dev += r.valor;
-          else if (r.id_grupo === 'Bonificação') obj.bon += r.valor;
-          obj.notas += (r.notas||0);
-          obj.clientes += (r.clientes||0);
-        });
-        obj.liquido = obj.bruto - (obj.dev + obj.bon);
-        obj.ticket = obj.notas ? obj.bruto / obj.notas : 0;
-        return obj;
-      };
-
-      const a1 = agg(rows1);
-      const a2 = agg(rows2);
-
-      let html = `<div style="font-weight:700; margin-bottom:8px">Comparação: ${String(p1.mes).padStart(2,'0')}/${p1.ano} vs ${String(p2.mes).padStart(2,'0')}/${p2.ano}</div>`;
-      const varPct = (x,y) => y === 0 ? '—' : `${(((x - y) / Math.abs(y)) * 100).toFixed(1)}%`;
-      html += `<div><b>Faturamento Líquido:</b> ${fmtBRL(a1.liquido)} vs ${fmtBRL(a2.liquido)} → var: ${varPct(a1.liquido, a2.liquido)} (${a1.liquido >= a2.liquido ? 'maior' : 'menor'})</div>`;
-      html += `<div style="margin-top:6px"><b>Drivers:</b></div>`;
-      html += `<ul style="padding-left:18px; line-height:1.4; margin-top:6px">`;
-      html += `<li>Notas: ${a1.notas} vs ${a2.notas} → ${a1.notas < a2.notas ? 'menos notas' : a1.notas > a2.notas ? 'mais notas' : 'mesmo número de notas'}</li>`;
-      html += `<li>Clientes: ${a1.clientes} vs ${a2.clientes} → ${a1.clientes < a2.clientes ? 'menos clientes' : a1.clientes > a2.clientes ? 'mais clientes' : 'mesmo número de clientes'}</li>`;
-      html += `<li>Devoluções (R$): ${fmtBRL(a1.dev)} vs ${fmtBRL(a2.dev)} ${a1.dev > a2.dev ? '→ aumentaram' : a1.dev < a2.dev ? '→ reduziram' : ''}</li>`;
-      html += `<li>Bonificações (R$): ${fmtBRL(a1.bon)} vs ${fmtBRL(a2.bon)} ${a1.bon > a2.bon ? '→ aumentaram' : a1.bon < a2.bon ? '→ reduziram' : ''}</li>`;
-      html += `<li>Ticket médio (bruto): ${a1.ticket ? 'R$ '+a1.ticket.toFixed(2).replace('.',',') : '—'} vs ${a2.ticket ? 'R$ '+a2.ticket.toFixed(2).replace('.',',') : '—'} ${ (a1.ticket && a2.ticket) ? (a1.ticket > a2.ticket ? '→ ticket maior' : a1.ticket < a2.ticket ? '→ ticket menor' : '') : ''}</li>`;
-      html += `</ul><div style="margin-top:8px"><b>Possíveis causas e recomendações:</b></div><ul style="padding-left:18px;line-height:1.4;margin-top:6px">`;
-
-      if (a1.liquido < a2.liquido) {
-        if (a1.notas < a2.notas) html += `<li>Redução no número de notas pode indicar perda de pedidos ou clientes — verificar clientes inativos e rotas com queda.</li>`;
-        if (a1.ticket < a2.ticket) html += `<li>Redução no ticket médio sugere mudança no mix de produtos ou menos vendas de grandes pedidos — analisar SKUs e contas-chave.</li>`;
-        if (a1.dev > a2.dev) html += `<li>Aumento de devoluções impactou o líquido — investigar motivos (qualidade, logística, divergência fiscal).</li>`;
-        if (a1.bon > a2.bon) html += `<li>Bonificações maiores reduziram o líquido — revisar política promo/canal para o período.</li>`;
-        if (!(a1.notas < a2.notas || a1.ticket < a2.ticket || a1.dev > a2.dev || a1.bon > a2.bon)) {
-          html += `<li>Diferença observada, mas sem driver claro nos dados filtrados — sugerimos análise por rota/produto para encontrar responsáveis.</li>`;
-        }
-      } else {
-        html += `<li>O período final (${String(p1.mes).padStart(2,'0')}/${p1.ano}) apresentou desempenho >= período inicial (${String(p2.mes).padStart(2,'0')}/${p2.ano}). Verificar ações realizadas (promoções, logística, grandes clientes) para replicar estratégias.</li>`;
-      }
-      html += `</ul>`;
-
-      document.getElementById('ai-response').innerHTML = html;
+    function answerComparePeriods(p1,p2) {
+      const filtered=getFilteredData();
+      const rows1=filtered.filter(r=>String(r.id_ano)===String(p1.ano)&&Number(r.mesNum)===Number(p1.mes));
+      const rows2=filtered.filter(r=>String(r.id_ano)===String(p2.ano)&&Number(r.mesNum)===Number(p2.mes));
+      if (!rows1.length&&!rows2.length){ document.getElementById('ai-response').innerHTML='<b>Sem dados para os períodos solicitados.</b>'; return; }
+      const agg=rows=>{ const o={bruto:0,dev:0,bon:0,desc:0,notas:0,clientes:0}; rows.forEach(r=>{ if(isGrupoVendas(r))o.bruto+=r.valor; if(isGrupoDev(r))o.dev+=r.valor; if(isGrupoBon(r))o.bon+=r.valor; if(isGrupoDesconto(r))o.desc+=r.valor; o.notas+=r.notas||0; o.clientes+=r.clientes||0; }); o.liquido=o.bruto-o.dev-o.bon-o.desc; o.ticket=o.notas?o.bruto/o.notas:0; return o; };
+      const a1=agg(rows1),a2=agg(rows2);
+      const varPct=(x,y)=>y===0?'—':`${(((x-y)/Math.abs(y))*100).toFixed(1)}%`;
+      let html=`<div style="font-weight:700;margin-bottom:8px">Comparação: ${String(p1.mes).padStart(2,'0')}/${p1.ano} vs ${String(p2.mes).padStart(2,'0')}/${p2.ano}</div>`;
+      html+=`<div><b>Faturamento Líquido:</b> ${fmtBRL(a1.liquido)} vs ${fmtBRL(a2.liquido)} → var: ${varPct(a1.liquido,a2.liquido)} (${a1.liquido>=a2.liquido?'maior':'menor'})</div>`;
+      html+=`<div style="margin-top:6px"><b>Drivers:</b></div><ul style="padding-left:18px;line-height:1.4;margin-top:6px">`;
+      html+=`<li>Notas: ${a1.notas} vs ${a2.notas} → ${a1.notas<a2.notas?'menos notas':a1.notas>a2.notas?'mais notas':'igual'}</li>`;
+      html+=`<li>Clientes: ${a1.clientes} vs ${a2.clientes} → ${a1.clientes<a2.clientes?'menos clientes':a1.clientes>a2.clientes?'mais clientes':'igual'}</li>`;
+      html+=`<li>Devoluções: ${fmtBRL(a1.dev)} vs ${fmtBRL(a2.dev)} ${a1.dev>a2.dev?'→ aumentaram':a1.dev<a2.dev?'→ reduziram':''}</li>`;
+      html+=`<li>Bonificações: ${fmtBRL(a1.bon)} vs ${fmtBRL(a2.bon)} ${a1.bon>a2.bon?'→ aumentaram':a1.bon<a2.bon?'→ reduziram':''}</li>`;
+      html+=`<li>Descontos: ${fmtBRL(a1.desc)} vs ${fmtBRL(a2.desc)} ${a1.desc>a2.desc?'→ aumentaram':a1.desc<a2.desc?'→ reduziram':''}</li>`;
+      html+=`<li>Ticket médio: ${a1.ticket?'R$ '+a1.ticket.toFixed(2).replace('.',','):'—'} vs ${a2.ticket?'R$ '+a2.ticket.toFixed(2).replace('.',','):'—'}</li>`;
+      html+=`</ul><div style="margin-top:8px"><b>Possíveis causas:</b></div><ul style="padding-left:18px;line-height:1.4;margin-top:6px">`;
+      if (a1.liquido<a2.liquido){
+        if (a1.notas<a2.notas)   html+=`<li>Redução no número de notas — verificar clientes inativos e rotas com queda.</li>`;
+        if (a1.ticket<a2.ticket) html+=`<li>Redução no ticket médio — analisar mix de produtos e contas-chave.</li>`;
+        if (a1.dev>a2.dev)       html+=`<li>Aumento de devoluções — investigar qualidade/logística.</li>`;
+        if (a1.bon>a2.bon)       html+=`<li>Bonificações maiores — revisar política promo/canal.</li>`;
+        if (a1.desc>a2.desc)     html+=`<li>Descontos maiores — revisar política de descontos.</li>`;
+        if (!(a1.notas<a2.notas||a1.ticket<a2.ticket||a1.dev>a2.dev||a1.bon>a2.bon||a1.desc>a2.desc)) html+=`<li>Sem driver claro — sugerimos análise por rota/produto.</li>`;
+      } else { html+=`<li>Período ${String(p1.mes).padStart(2,'0')}/${p1.ano} >= ${String(p2.mes).padStart(2,'0')}/${p2.ano}. Verificar ações realizadas para replicar estratégias.</li>`; }
+      html+=`</ul>`;
+      document.getElementById('ai-response').innerHTML=html;
     }
 
-    // ---------- Mobile adjustments ----------
     function setupMobile() {
-      const mq = window.matchMedia('(max-width:1000px)');
-      const mobileTopbar = document.getElementById('mobileTopbar');
-      function refresh() {
-        if (mq.matches) {
-          mobileTopbar.style.display = 'flex';
-          document.getElementById('sidebar').classList.add('closed');
-        } else {
-          mobileTopbar.style.display = 'none';
-          document.getElementById('sidebar').classList.remove('closed');
-          overlay.classList.remove('show');
-        }
-      }
-      mq.addEventListener('change', refresh);
-      refresh();
+      const mq=window.matchMedia('(max-width:1000px)'), mobileTopbar=document.getElementById('mobileTopbar');
+      function refresh(){ if(mq.matches){mobileTopbar.style.display='flex';document.getElementById('sidebar').classList.add('closed');}else{mobileTopbar.style.display='none';document.getElementById('sidebar').classList.remove('closed');overlay.classList.remove('show');} }
+      mq.addEventListener('change',refresh); refresh();
     }
 
     window.onload = init;
