@@ -36,8 +36,8 @@
     .choices__inner { background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; min-height: 42px !important; padding: 4px !important; }
     .choices__list--multiple .choices__item { background-color: #004a99 !important; border: none !important; border-radius: 4px !important; font-weight: 600 !important; }
 
-    /* ← 6 colunas para incluir Descontos */
-    .kpi-row{display:grid; grid-template-columns:repeat(6,1fr); gap:15px; margin-bottom:25px}
+    /* ← 7 colunas para incluir Trocas Redes */
+    .kpi-row{display:grid; grid-template-columns:repeat(7,1fr); gap:15px; margin-bottom:25px}
     .card{background:white; border-radius:10px; padding:14px 16px 10px 16px; border:1px solid var(--card-border); box-shadow:0 2px 8px rgba(0,0,0,0.02); display:flex; flex-direction:column; justify-content:space-between;}
     .card .title{font-size:10px; color:#64748b; font-weight:700; text-transform:uppercase; line-height:1; margin-bottom:4px;}
     .card .value{font-size:17px; font-weight:800; color: #1e293b; line-height:1.1;}
@@ -78,8 +78,8 @@
     .mobile-topbar .hamburger { width:40px; height:36px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#fff; border:1px solid #e2e8f0; cursor:pointer; }
     .mobile-spacer { height:56px; }
 
-    @media (max-width:1200px){
-      .kpi-row{grid-template-columns:repeat(3,1fr)}
+    @media (max-width:1400px){
+      .kpi-row{grid-template-columns:repeat(4,1fr)}
     }
     @media (max-width:1000px){
       .kpi-row{grid-template-columns:repeat(2,1fr)}
@@ -147,6 +147,8 @@
         <div class="filter-group"><label>Cidade</label><select id="filter-city" multiple></select></div>
         <div class="filter-group"><label>Rota</label><select id="filter-route" multiple></select></div>
         <div class="filter-group"><label>Operação</label><select id="filter-operation" multiple></select></div>
+        <!-- NOVO: Filtro Motivos Devoluções -->
+        <div class="filter-group"><label>Motivos Devoluções</label><select id="filter-motivo" multiple></select></div>
       </div>
 
       <div id="dashboard-view">
@@ -155,7 +157,8 @@
           <div class="card"><div><div class="title">Faturamento Líquido</div><div class="value" id="kpi-liquido">R$ 0,00</div></div><div class="meta" id="kpi-liquido-pct">—</div></div>
           <div class="card"><div><div class="title">Bonificações</div><div class="value" id="kpi-bon">R$ 0,00</div></div><div class="meta" id="kpi-bon-pct">—</div></div>
           <div class="card"><div><div class="title">Devoluções</div><div class="value" id="kpi-dev">R$ 0,00</div></div><div class="meta" id="kpi-dev-pct">—</div></div>
-          <!-- NOVO: card Descontos -->
+          <!-- NOVO: card Trocas Redes -->
+          <div class="card"><div><div class="title">Trocas Redes</div><div class="value" id="kpi-trocas">R$ 0,00</div></div><div class="meta" id="kpi-trocas-pct">—</div></div>
           <div class="card"><div><div class="title">Descontos</div><div class="value" id="kpi-desc">R$ 0,00</div></div><div class="meta" id="kpi-desc-pct">—</div></div>
           <div class="card">
             <div><div class="title">Atendimento</div>
@@ -254,9 +257,24 @@
     let selectedRoute = null;
     let openSummaryRow = null;
 
-    // ── Helpers de classificação (baseados APENAS em id_grupo) ──────────────
+    // ── Helpers de classificação (regras com id_motivo) ────────────────────────
     function isGrupoVendas(r)      { return String(r.id_grupo||'').trim() === 'Vendas'; }
-    function isGrupoDev(r)         { const g = String(r.id_grupo||'').trim(); return g === 'Dev. Vendas' || g.toLowerCase().includes('devolu'); }
+    
+    // Identificação dos motivos de Trocas Redes (5, 8, 26, 27)
+    function isTrocaRedes(r) {
+      if (!isGrupoDev(r)) return false;
+      const m = String(r.id_motivo || '').trim();
+      return m.startsWith('5') || m.startsWith('8') || m.startsWith('26') || m.startsWith('27');
+    }
+
+    // Devoluções exclusivas (sem incluir as trocas de rede)
+    function isGrupoDev(r)         { 
+      const g = String(r.id_grupo||'').trim(); 
+      return g === 'Dev. Vendas' || g.toLowerCase().includes('devolu'); 
+    }
+    
+    function isGrupoDevPadrão(r)   { return isGrupoDev(r) && !isTrocaRedes(r); }
+
     function isGrupoBon(r)         { return String(r.id_grupo||'').trim().toLowerCase().includes('bonifica'); }
     function isGrupoDesconto(r)    {
       const g = String(r.id_grupo||'').trim().toLowerCase();
@@ -264,12 +282,13 @@
       return g.includes('desconto') || op.includes('desconto');
     }
 
-    // Valor líquido de uma linha: vendas = positivo, redutoras = negativo
+    // Valor líquido de uma linha: vendas = positivo, redutoras (devs padrão, trocas, bon, desc) = negativo
     function valorLiq(r) {
-      if (isGrupoVendas(r))   return  r.valor;
-      if (isGrupoDev(r))      return -r.valor;
-      if (isGrupoBon(r))      return -r.valor;
-      if (isGrupoDesconto(r)) return -r.valor;
+      if (isGrupoVendas(r))      return  r.valor;
+      if (isGrupoDevPadrão(r))  return -r.valor;
+      if (isTrocaRedes(r))       return -r.valor;
+      if (isGrupoBon(r))         return -r.valor;
+      if (isGrupoDesconto(r))    return -r.valor;
       return 0;
     }
     // ────────────────────────────────────────────────────────────────────────
@@ -319,22 +338,24 @@
 
     function getFiltersFromChoices() {
       return {
-        years:  (choices.year  && choices.year.getValue  ? choices.year.getValue(true)  : []).map(String),
-        months: (choices.month && choices.month.getValue ? choices.month.getValue(true) : []).map(v=>String(v).toLowerCase()),
-        cities: (choices.city  && choices.city.getValue  ? choices.city.getValue(true)  : []),
-        routes: (choices.route && choices.route.getValue ? choices.route.getValue(true) : []),
-        ops:    (choices.op    && choices.op.getValue    ? choices.op.getValue(true)    : [])
+        years:   (choices.year   && choices.year.getValue   ? choices.year.getValue(true)   : []).map(String),
+        months:  (choices.month  && choices.month.getValue  ? choices.month.getValue(true)  : []).map(v=>String(v).toLowerCase()),
+        cities:  (choices.city   && choices.city.getValue   ? choices.city.getValue(true)   : []),
+        routes:  (choices.route  && choices.route.getValue  ? choices.route.getValue(true)  : []),
+        ops:     (choices.op     && choices.op.getValue     ? choices.op.getValue(true)     : []),
+        motivos: (choices.motivo && choices.motivo.getValue ? choices.motivo.getValue(true) : [])
       };
     }
 
     function getFilteredData() {
       const f = getFiltersFromChoices();
       return rawData.filter(r => {
-        if (f.years.length  && !f.years.includes(String(r.id_ano)))                    return false;
-        if (f.months.length && !f.months.includes(String(r.id_mes).toLowerCase()))     return false;
-        if (f.cities.length && !f.cities.includes(r.id_cidade))                        return false;
-        if (f.routes.length && !f.routes.includes(r.id_rota))                          return false;
-        if (f.ops.length    && !f.ops.includes(r.id_operação))                         return false;
+        if (f.years.length   && !f.years.includes(String(r.id_ano)))                    return false;
+        if (f.months.length  && !f.months.includes(String(r.id_mes).toLowerCase()))     return false;
+        if (f.cities.length  && !f.cities.includes(r.id_cidade))                        return false;
+        if (f.routes.length  && !f.routes.includes(r.id_rota))                          return false;
+        if (f.ops.length     && !f.ops.includes(r.id_operação))                        return false;
+        if (f.motivos.length && !f.motivos.includes(String(r.id_motivo||'')))            return false;
         return true;
       });
     }
@@ -342,16 +363,18 @@
     // ── Filtros ──────────────────────────────────────────────────────────────
     function setupFilters() {
       const config = { removeItemButton:true, itemSelectText:'', shouldSort:false };
-      const years  = [...new Set(rawData.map(r=>String(r.id_ano)))].filter(Boolean).sort();
-      const cities = [...new Set(rawData.map(r=>r.id_cidade))].filter(Boolean).sort();
-      const routes = [...new Set(rawData.map(r=>r.id_rota))].filter(Boolean).sort();
-      const ops    = [...new Set(rawData.map(r=>r.id_operação))].filter(Boolean).sort();
+      const years   = [...new Set(rawData.map(r=>String(r.id_ano)))].filter(Boolean).sort();
+      const cities  = [...new Set(rawData.map(r=>r.id_cidade))].filter(Boolean).sort();
+      const routes  = [...new Set(rawData.map(r=>r.id_rota))].filter(Boolean).sort();
+      const ops     = [...new Set(rawData.map(r=>r.id_operação))].filter(Boolean).sort();
+      const motivos = [...new Set(rawData.map(r=>String(r.id_motivo||'').trim()))].filter(Boolean).sort();
 
-      choices.year  = new Choices('#filter-year',      config).setChoices(years.map(v=>({value:v,label:v})));
-      choices.month = new Choices('#filter-month',     config);
-      choices.city  = new Choices('#filter-city',      config).setChoices(cities.map(v=>({value:v,label:v})));
-      choices.route = new Choices('#filter-route',     config).setChoices(routes.map(v=>({value:v,label:v})));
-      choices.op    = new Choices('#filter-operation', config).setChoices(ops.map(v=>({value:v,label:v})));
+      choices.year   = new Choices('#filter-year',      config).setChoices(years.map(v=>({value:v,label:v})));
+      choices.month  = new Choices('#filter-month',     config);
+      choices.city   = new Choices('#filter-city',      config).setChoices(cities.map(v=>({value:v,label:v})));
+      choices.route  = new Choices('#filter-route',     config).setChoices(routes.map(v=>({value:v,label:v})));
+      choices.op     = new Choices('#filter-operation', config).setChoices(ops.map(v=>({value:v,label:v})));
+      choices.motivo = new Choices('#filter-motivo',    config).setChoices(motivos.map(v=>({value:v,label:v})));
 
       Object.values(choices).forEach(c => {
         try { c.passedElement.element.addEventListener('change', ()=>updateDashboard(true)); } catch(e){}
@@ -386,16 +409,17 @@
     // ── KPIs ─────────────────────────────────────────────────────────────────
     function renderKPIs(data) {
       const monthKeys = [...new Set(data.map(r=>`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`))].sort();
-      const brutoArr=[],devArr=[],bonArr=[],descArr=[],liqArr=[],nArr=[],cArr=[];
+      const brutoArr=[],devArr=[],trocasArr=[],bonArr=[],descArr=[],liqArr=[],nArr=[],cArr=[];
 
       monthKeys.forEach(mk => {
         const rows = data.filter(r=>`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`===mk);
         const b  = rows.filter(isGrupoVendas).reduce((s,r)=>s+r.valor,0);
-        const d  = rows.filter(isGrupoDev).reduce((s,r)=>s+r.valor,0);
+        const d  = rows.filter(isGrupoDevPadrão).reduce((s,r)=>s+r.valor,0);
+        const t  = rows.filter(isTrocaRedes).reduce((s,r)=>s+r.valor,0);
         const bo = rows.filter(isGrupoBon).reduce((s,r)=>s+r.valor,0);
         const de = rows.filter(isGrupoDesconto).reduce((s,r)=>s+r.valor,0);
-        brutoArr.push(b); devArr.push(d); bonArr.push(bo); descArr.push(de);
-        liqArr.push(b - d - bo - de);
+        brutoArr.push(b); devArr.push(d); trocasArr.push(t); bonArr.push(bo); descArr.push(de);
+        liqArr.push(b - d - t - bo - de);
         nArr.push(rows.reduce((s,r)=>s+r.notas,0));
         cArr.push(rows.reduce((s,r)=>s+r.clientes,0));
       });
@@ -410,6 +434,8 @@
       document.getElementById('kpi-bon-pct').innerHTML  = formatG(calcGrowthRate(bonArr));
       document.getElementById('kpi-dev').innerText      = fmtBRL(devArr.reduce((a,b)=>a+b,0));
       document.getElementById('kpi-dev-pct').innerHTML  = formatG(calcGrowthRate(devArr));
+      document.getElementById('kpi-trocas').innerText   = fmtBRL(trocasArr.reduce((a,b)=>a+b,0));
+      document.getElementById('kpi-trocas-pct').innerHTML = formatG(calcGrowthRate(trocasArr));
       document.getElementById('kpi-desc').innerText     = fmtBRL(descArr.reduce((a,b)=>a+b,0));
       document.getElementById('kpi-desc-pct').innerHTML = formatG(calcGrowthRate(descArr));
       document.getElementById('kpi-notas').innerText    = Math.round(nArr.reduce((a,b)=>a+b,0)/(nArr.length||1)).toLocaleString();
@@ -447,7 +473,7 @@
       });
     }
 
-    // ── Melhores / Piores períodos (usa valorLiq → inclui descontos) ─────────
+    // ── Melhores / Piores períodos (usa valorLiq → inclui trocas e descontos) ─────────
     function renderBestWorstCharts(data) {
       const map = {};
       data.forEach(r => {
@@ -472,7 +498,7 @@
       });
     }
 
-    // ── Tabela de rotas (usa valorLiq → inclui descontos) ────────────────────
+    // ── Tabela de rotas (usa valorLiq → inclui trocas e descontos) ────────────────────
     function renderTable(data) {
       const map = {};
       data.forEach(r=>{
@@ -503,12 +529,13 @@
             if (openSummaryRow && openSummaryRow.previousSibling===tr){ openSummaryRow.remove(); openSummaryRow=null; selectedRoute=null; return; }
             if (openSummaryRow) openSummaryRow.remove();
             selectedRoute = name;
-            const rows  = rawData.filter(r=>r.id_rota===name);
-            const bruto = rows.filter(isGrupoVendas).reduce((s,r)=>s+r.valor,0);
-            const dev   = rows.filter(isGrupoDev).reduce((s,r)=>s+r.valor,0);
-            const bon   = rows.filter(isGrupoBon).reduce((s,r)=>s+r.valor,0);
-            const desc  = rows.filter(isGrupoDesconto).reduce((s,r)=>s+r.valor,0);
-            const liq   = bruto - dev - bon - desc;
+            const rows   = rawData.filter(r=>r.id_rota===name);
+            const bruto  = rows.filter(isGrupoVendas).reduce((s,r)=>s+r.valor,0);
+            const dev    = rows.filter(isGrupoDevPadrão).reduce((s,r)=>s+r.valor,0);
+            const trocas = rows.filter(isTrocaRedes).reduce((s,r)=>s+r.valor,0);
+            const bon    = rows.filter(isGrupoBon).reduce((s,r)=>s+r.valor,0);
+            const desc   = rows.filter(isGrupoDesconto).reduce((s,r)=>s+r.valor,0);
+            const liq    = bruto - dev - trocas - bon - desc;
             const totalNotas    = rows.reduce((s,r)=>s+(r.notas||0),0);
             const totalClientes = rows.reduce((s,r)=>s+(r.clientes||0),0);
 
@@ -524,7 +551,7 @@
                 <div style="background:#fff;padding:10px;border-radius:8px;border:1px solid #e2e8f0">
                   <div style="font-size:10px;color:#64748b;font-weight:700">FATURAMENTO LÍQUIDO</div>
                   <div style="font-size:16px;font-weight:800">${fmtBRL(liq)}</div>
-                  <div style="font-size:10px;color:#94a3b8">Bruto ${fmtBRL(bruto)} · Dev ${fmtBRL(dev)} · Bon ${fmtBRL(bon)} · Desc ${fmtBRL(desc)}</div>
+                  <div style="font-size:10px;color:#94a3b8">Bruto ${fmtBRL(bruto)} · Dev ${fmtBRL(dev)} · Trocas ${fmtBRL(trocas)} · Bon ${fmtBRL(bon)} · Desc ${fmtBRL(desc)}</div>
                 </div>
                 <div style="background:#fff;padding:10px;border-radius:8px;border:1px solid #e2e8f0">
                   <div style="font-size:10px;color:#64748b;font-weight:700">TOTAL NOTAS</div>
@@ -554,9 +581,9 @@
       const name = decodeURIComponent(nEncoded);
       const rows = rawData.filter(r=>r.id_rota===name);
       if (!rows.length){ alert('Nenhum dado para exportar para a rota: '+name); return; }
-      const headers = ['Ano','Mes','Cidade','Rota','Operação','Grupo','Valor','Notas','Clientes'];
+      const headers = ['Ano','Mes','Cidade','Rota','Operação','Grupo','Motivo','Valor','Notas','Clientes'];
       const csvRows = [headers.join(';')];
-      rows.forEach(r=>{ csvRows.push([r.id_ano,r.id_mes,r.id_cidade,r.id_rota,r.id_operação,r.id_grupo,r.valor.toFixed(2).replace('.',','),r.notas,r.clientes].join(';')); });
+      rows.forEach(r=>{ csvRows.push([r.id_ano,r.id_mes,r.id_cidade,r.id_rota,r.id_operação,r.id_grupo,r.id_motivo||'',r.valor.toFixed(2).replace('.',','),r.notas,r.clientes].join(';')); });
       const blob = new Blob(['\uFEFF'+csvRows.join('\n')],{type:'text/csv;charset=utf-8;'});
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -584,17 +611,18 @@
       const monthAgg={};
       filtered.forEach(r=>{
         const key=`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
-        if (!monthAgg[key]) monthAgg[key]={bruto:0,dev:0,bon:0,desc:0,notas:0,clientes:0,rows:[]};
-        if (isGrupoVendas(r))   monthAgg[key].bruto += r.valor;
-        if (isGrupoDev(r))      monthAgg[key].dev   += r.valor;
-        if (isGrupoBon(r))      monthAgg[key].bon   += r.valor;
-        if (isGrupoDesconto(r)) monthAgg[key].desc  += r.valor;
+        if (!monthAgg[key]) monthAgg[key]={bruto:0,dev:0,trocas:0,bon:0,desc:0,notas:0,clientes:0,rows:[]};
+        if (isGrupoVendas(r))     monthAgg[key].bruto  += r.valor;
+        if (isGrupoDevPadrão(r)) monthAgg[key].dev    += r.valor;
+        if (isTrocaRedes(r))      monthAgg[key].trocas += r.valor;
+        if (isGrupoBon(r))        monthAgg[key].bon    += r.valor;
+        if (isGrupoDesconto(r))   monthAgg[key].desc   += r.valor;
         monthAgg[key].notas    += r.notas||0;
         monthAgg[key].clientes += r.clientes||0;
         monthAgg[key].rows.push(r);
       });
       const periods = Object.keys(monthAgg).sort();
-      const summary = periods.map(p=>{ const o=monthAgg[p]; return {periodo:p,bruto:o.bruto,dev:o.dev,bon:o.bon,desc:o.desc,liquido:o.bruto-o.dev-o.bon-o.desc,notas:o.notas,clientes:o.clientes,rows:o.rows}; });
+      const summary = periods.map(p=>{ const o=monthAgg[p]; return {periodo:p,bruto:o.bruto,dev:o.dev,trocas:o.trocas,bon:o.bon,desc:o.desc,liquido:o.bruto-o.dev-o.trocas-o.bon-o.desc,notas:o.notas,clientes:o.clientes,rows:o.rows}; });
 
       const routeImpact={};
       filtered.forEach(r=>{ const rt=r.id_rota||'Sem Rota'; routeImpact[rt]=(routeImpact[rt]||0)+valorLiq(r); });
@@ -659,9 +687,9 @@
           const pct=((last.liquido-first.liquido)/Math.max(1,Math.abs(first.liquido)))*100;
           parts.push(`<b>Variação (primeiro vs último):</b> ${fmtBRL(first.liquido)} → ${fmtBRL(last.liquido)} (${pct>=0?'+':''}${pct.toFixed(1)}%)`);
         } else parts.push('<b>Sem períodos para sumarizar.</b>');
-        if (gen.topRoutes&&gen.topRoutes.length)   parts.push(`<b>Top rotas:</b><br>${gen.topRoutes.slice(0,5).map(r=>`${r[0]}: ${fmtBRL(r[1])}`).join('<br>')}`);
-        if (gen.worstRoutes&&gen.worstRoutes.length) parts.push(`<b>Piores rotas:</b><br>${gen.worstRoutes.slice(0,5).map(r=>`${r[0]}: ${fmtBRL(r[1])}`).join('<br>')}`);
-        if (gen.topProducts&&gen.topProducts.length) parts.push(`<b>Top produtos:</b><br>${gen.topProducts.slice(0,5).map(p=>`${p[0]}: ${fmtBRL(p[1])}`).join('<br>')}`);
+        if (gen.topRoutes&&gen.topRoutes.length)   parts.push(`<b>Top rotas:</b><br>${gen.topRoutes.slice(0,5).map(r=>`${r[0]}:${fmtBRL(r[1])}`).join('<br>')}`);
+        if (gen.worstRoutes&&gen.worstRoutes.length) parts.push(`<b>Piores rotas:</b><br>${gen.worstRoutes.slice(0,5).map(r=>`${r[0]}:${fmtBRL(r[1])}`).join('<br>')}`);
+        if (gen.topProducts&&gen.topProducts.length) parts.push(`<b>Top produtos:</b><br>${gen.topProducts.slice(0,5).map(p=>`${p[0]}:${fmtBRL(p[1])}`).join('<br>')}`);
         const htmlParts=[];
         htmlParts.push('<div style="font-weight:800;margin-bottom:8px">Resumo & Principais Drivers</div>');
         htmlParts.push('<div style="margin-bottom:8px">'+parts.join('<br>')+'</div>');
@@ -748,11 +776,12 @@
         const periodAgg={};
         filtered.forEach(r=>{
           const key=`${r.id_ano}-${String(r.mesNum).padStart(2,'0')}`;
-          if (!periodAgg[key]) periodAgg[key]={bruto:0,dev:0,bon:0,desc:0,notas:0,clientes:0};
-          if (isGrupoVendas(r))   periodAgg[key].bruto+=r.valor;
-          if (isGrupoDev(r))      periodAgg[key].dev  +=r.valor;
-          if (isGrupoBon(r))      periodAgg[key].bon  +=r.valor;
-          if (isGrupoDesconto(r)) periodAgg[key].desc +=r.valor;
+          if (!periodAgg[key]) periodAgg[key]={bruto:0,dev:0,trocas:0,bon:0,desc:0,notas:0,clientes:0};
+          if (isGrupoVendas(r))     periodAgg[key].bruto  +=r.valor;
+          if (isGrupoDevPadrão(r)) periodAgg[key].dev    +=r.valor;
+          if (isTrocaRedes(r))      periodAgg[key].trocas +=r.valor;
+          if (isGrupoBon(r))        periodAgg[key].bon    +=r.valor;
+          if (isGrupoDesconto(r))   periodAgg[key].desc   +=r.valor;
           periodAgg[key].notas    +=r.notas||0;
           periodAgg[key].clientes +=r.clientes||0;
         });
@@ -768,7 +797,7 @@
         const lines=[];
         lines.push(`Resposta automática (IA local) — pergunta: "${qRaw}"`,'');
         lines.push('Resumo rápido do período filtrado:');
-        if (recentPeriods.length) recentPeriods.forEach(p=>{ const o=periodAgg[p]; lines.push(`- ${p}: bruto=${fmtBRL(o.bruto)} · dev=${fmtBRL(o.dev)} · bon=${fmtBRL(o.bon)} · desc=${fmtBRL(o.desc)} · líquido=${fmtBRL(o.bruto-o.dev-o.bon-o.desc)} · notas=${o.notas} · clientes=${o.clientes}`); });
+        if (recentPeriods.length) recentPeriods.forEach(p=>{ const o=periodAgg[p]; lines.push(`- ${p}: bruto=${fmtBRL(o.bruto)} · dev=${fmtBRL(o.dev)} · trocas=${fmtBRL(o.trocas)} · bon=${fmtBRL(o.bon)} · desc=${fmtBRL(o.desc)} · líquido=${fmtBRL(o.bruto-o.dev-o.trocas-o.bon-o.desc)} · notas=${o.notas} · clientes=${o.clientes}`); });
         else lines.push('- Sem períodos suficientes.');
         lines.push('');
         if (gen.summaryPeriods.length>=1){ lines.push('Principais drivers identificados:'); (gen.notes||[]).forEach(n=>lines.push(`- ${n}`)); }
@@ -792,7 +821,7 @@
       const rows1=filtered.filter(r=>String(r.id_ano)===String(p1.ano)&&Number(r.mesNum)===Number(p1.mes));
       const rows2=filtered.filter(r=>String(r.id_ano)===String(p2.ano)&&Number(r.mesNum)===Number(p2.mes));
       if (!rows1.length&&!rows2.length){ document.getElementById('ai-response').innerHTML='<b>Sem dados para os períodos solicitados.</b>'; return; }
-      const agg=rows=>{ const o={bruto:0,dev:0,bon:0,desc:0,notas:0,clientes:0}; rows.forEach(r=>{ if(isGrupoVendas(r))o.bruto+=r.valor; if(isGrupoDev(r))o.dev+=r.valor; if(isGrupoBon(r))o.bon+=r.valor; if(isGrupoDesconto(r))o.desc+=r.valor; o.notas+=r.notas||0; o.clientes+=r.clientes||0; }); o.liquido=o.bruto-o.dev-o.bon-o.desc; o.ticket=o.notas?o.bruto/o.notas:0; return o; };
+      const agg=rows=>{ const o={bruto:0,dev:0,trocas:0,bon:0,desc:0,notas:0,clientes:0}; rows.forEach(r=>{ if(isGrupoVendas(r))o.bruto+=r.valor; if(isGrupoDevPadrão(r))o.dev+=r.valor; if(isTrocaRedes(r))o.trocas+=r.valor; if(isGrupoBon(r))o.bon+=r.valor; if(isGrupoDesconto(r))o.desc+=r.valor; o.notas+=r.notas||0; o.clientes+=r.clientes||0; }); o.liquido=o.bruto-o.dev-o.trocas-o.bon-o.desc; o.ticket=o.notas?o.bruto/o.notas:0; return o; };
       const a1=agg(rows1),a2=agg(rows2);
       const varPct=(x,y)=>y===0?'—':`${(((x-y)/Math.abs(y))*100).toFixed(1)}%`;
       let html=`<div style="font-weight:700;margin-bottom:8px">Comparação: ${String(p1.mes).padStart(2,'0')}/${p1.ano} vs ${String(p2.mes).padStart(2,'0')}/${p2.ano}</div>`;
@@ -801,6 +830,7 @@
       html+=`<li>Notas: ${a1.notas} vs ${a2.notas} → ${a1.notas<a2.notas?'menos notas':a1.notas>a2.notas?'mais notas':'igual'}</li>`;
       html+=`<li>Clientes: ${a1.clientes} vs ${a2.clientes} → ${a1.clientes<a2.clientes?'menos clientes':a1.clientes>a2.clientes?'mais clientes':'igual'}</li>`;
       html+=`<li>Devoluções: ${fmtBRL(a1.dev)} vs ${fmtBRL(a2.dev)} ${a1.dev>a2.dev?'→ aumentaram':a1.dev<a2.dev?'→ reduziram':''}</li>`;
+      html+=`<li>Trocas Redes: ${fmtBRL(a1.trocas)} vs ${fmtBRL(a2.trocas)} ${a1.trocas>a2.trocas?'→ aumentaram':a1.trocas<a2.trocas?'→ reduziram':''}</li>`;
       html+=`<li>Bonificações: ${fmtBRL(a1.bon)} vs ${fmtBRL(a2.bon)} ${a1.bon>a2.bon?'→ aumentaram':a1.bon<a2.bon?'→ reduziram':''}</li>`;
       html+=`<li>Descontos: ${fmtBRL(a1.desc)} vs ${fmtBRL(a2.desc)} ${a1.desc>a2.desc?'→ aumentaram':a1.desc<a2.desc?'→ reduziram':''}</li>`;
       html+=`<li>Ticket médio: ${a1.ticket?'R$ '+a1.ticket.toFixed(2).replace('.',','):'—'} vs ${a2.ticket?'R$ '+a2.ticket.toFixed(2).replace('.',','):'—'}</li>`;
@@ -809,9 +839,10 @@
         if (a1.notas<a2.notas)   html+=`<li>Redução no número de notas — verificar clientes inativos e rotas com queda.</li>`;
         if (a1.ticket<a2.ticket) html+=`<li>Redução no ticket médio — analisar mix de produtos e contas-chave.</li>`;
         if (a1.dev>a2.dev)       html+=`<li>Aumento de devoluções — investigar qualidade/logística.</li>`;
+        if (a1.trocas>a2.trocas) html+=`<li>Aumento de trocas nas redes — investigar motivos especificos com o comercial.</li>`;
         if (a1.bon>a2.bon)       html+=`<li>Bonificações maiores — revisar política promo/canal.</li>`;
         if (a1.desc>a2.desc)     html+=`<li>Descontos maiores — revisar política de descontos.</li>`;
-        if (!(a1.notas<a2.notas||a1.ticket<a2.ticket||a1.dev>a2.dev||a1.bon>a2.bon||a1.desc>a2.desc)) html+=`<li>Sem driver claro — sugerimos análise por rota/produto.</li>`;
+        if (!(a1.notas<a2.notas||a1.ticket<a2.ticket||a1.dev>a2.dev||a1.trocas>a2.trocas||a1.bon>a2.bon||a1.desc>a2.desc)) html+=`<li>Sem driver claro — sugerimos análise por rota/produto.</li>`;
       } else { html+=`<li>Período ${String(p1.mes).padStart(2,'0')}/${p1.ano} >= ${String(p2.mes).padStart(2,'0')}/${p2.ano}. Verificar ações realizadas para replicar estratégias.</li>`; }
       html+=`</ul>`;
       document.getElementById('ai-response').innerHTML=html;
